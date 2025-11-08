@@ -12,12 +12,12 @@ WITH
   ves_currency AS (SELECT id FROM currencies WHERE code = 'VES'),
   cop_currency AS (SELECT id FROM currencies WHERE code = 'COP'),
   ars_currency AS (SELECT id FROM currencies WHERE code = 'ARS')
-INSERT INTO countries (id, name, iso2, iso3, default_currency_id)
+INSERT INTO countries (id, name, iso, default_currency_id)
 VALUES
-  (uuid_generate_v4(), 'Venezuela',     'VE', 'VEN', (SELECT id FROM ves_currency)),
-  (uuid_generate_v4(), 'Colombia',      'CO', 'COL', (SELECT id FROM cop_currency)),
-  (uuid_generate_v4(), 'Argentina',     'AR', 'ARG', (SELECT id FROM ars_currency)),
-  (uuid_generate_v4(), 'United States', 'US', 'USA', (SELECT id FROM usd_currency))
+  (uuid_generate_v4(), 'Venezuela', 'VEN', (SELECT id FROM ves_currency)),
+  (uuid_generate_v4(), 'Colombia', 'COL', (SELECT id FROM cop_currency)),
+  (uuid_generate_v4(), 'Argentina', 'ARG', (SELECT id FROM ars_currency)),
+  (uuid_generate_v4(), 'United States', 'USA', (SELECT id FROM usd_currency))
 ON CONFLICT (name) DO NOTHING;
 
 
@@ -25,10 +25,10 @@ INSERT INTO country_currencies (country_id, currency_id)
 SELECT country.id, currency.id
 FROM countries AS country
 JOIN currencies AS currency ON (
-  (country.iso2 = 'VE' AND currency.code IN ('VES','USD')) OR
-  (country.iso2 = 'CO' AND currency.code IN ('COP','USD')) OR
-  (country.iso2 = 'AR' AND currency.code IN ('ARS','USD')) OR
-  (country.iso2 = 'US' AND currency.code IN ('USD'))
+  (country.iso = 'VEN' AND currency.code IN ('VES','USD')) OR
+  (country.iso = 'COL' AND currency.code IN ('COP','USD')) OR
+  (country.iso = 'ARG' AND currency.code IN ('ARS','USD')) OR
+  (country.iso = 'USA' AND currency.code IN ('USD'))
 )
 ON CONFLICT DO NOTHING;
 
@@ -45,14 +45,14 @@ SELECT
   country.id
 FROM (
   VALUES
-    ('USD','VES',  40.00000000, 'OFFICIAL', 'VE'),
-    ('USD','COP', 4200.00000000, 'OFFICIAL', 'CO'),
-    ('USD','ARS',  950.00000000, 'OFFICIAL', 'AR'),
-    ('USD','VES',  42.50000000, 'MARKET',   'VE'),
-    ('USD','COP', 4300.00000000, 'MARKET',   'CO'),
-    ('USD','ARS',  980.00000000, 'MARKET',   'AR')
-) AS seed_exchange_rates(base_code, quote_code, rate_value, rate_source, country_iso2)
+    ('USD','VES',  40.00000000, 'OFFICIAL', 'VEN'),
+    ('USD','COP', 4200.00000000, 'OFFICIAL', 'COL'),
+    ('USD','ARS',  950.00000000, 'OFFICIAL', 'ARG'),
+    ('USD','VES',  42.50000000, 'MARKET',   'VEN'),
+    ('USD','COP', 4300.00000000, 'MARKET',   'COL'),
+    ('USD','ARS',  980.00000000, 'MARKET',   'ARG')
+) AS seed_exchange_rates(base_code, quote_code, rate_value, rate_source, country_iso)
 JOIN currencies AS base_currency  ON base_currency.code  = seed_exchange_rates.base_code
 JOIN currencies AS quote_currency ON quote_currency.code = seed_exchange_rates.quote_code
-JOIN countries  AS country        ON country.iso2        = seed_exchange_rates.country_iso2
+JOIN countries  AS country        ON country.iso        = seed_exchange_rates.country_iso
 ON CONFLICT DO NOTHING;
