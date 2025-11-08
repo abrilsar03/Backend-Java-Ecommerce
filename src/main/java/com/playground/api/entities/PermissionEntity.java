@@ -3,7 +3,7 @@ package com.playground.api.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "permissions", uniqueConstraints = @UniqueConstraint(name = "uq_perm",
+@Table(name = "permissions", uniqueConstraints = @UniqueConstraint(name = "unique_permission",
         columnNames = {"resource", "action"}))
 
 public class PermissionEntity extends BasicEntity {

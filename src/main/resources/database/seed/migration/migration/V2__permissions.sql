@@ -2,7 +2,7 @@ CREATE TABLE permissions (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   resource TEXT NOT NULL, CHECK (resource IN ('PRODUCT', 'USER', 'ORDER', 'CART', 'PAYMENT')), 
   action   TEXT NOT NULL, CHECK (action IN ('CREATE', 'READ', 'UPDATE', 'DELETE')),
-  CONSTRAINT uq_perm UNIQUE (resource, action)
+  CONSTRAINT unique_permission UNIQUE (resource, action)
 );
 
 CREATE TABLE role_permissions (
