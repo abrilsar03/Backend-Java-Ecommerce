@@ -2,8 +2,10 @@ package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ecommerce.api.enums.DocumentType;
 
 @Entity
@@ -20,8 +22,8 @@ public class UserEntity extends BasicEntity {
     @Email
     private String email;
 
-    @Column(name = "username", unique = true, length = 50)
-    private String username;
+    @Column(name = "password", nullable = false, length = 255)
+    private String password;
 
     @Column(name = "phone_code", length = 5)
     private String phoneCode;
@@ -70,14 +72,6 @@ public class UserEntity extends BasicEntity {
         this.email = email;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public String getPhoneCode() {
         return phoneCode;
     }
@@ -124,6 +118,18 @@ public class UserEntity extends BasicEntity {
 
     public void setDirectPermissions(Set<PermissionEntity> directPermissions) {
         this.directPermissions = directPermissions;
+    }
+
+    public void setPassword(String password, PasswordEncoder passwordEncoder) {
+        this.password = passwordEncoder.encode(password);
+    }
+
+    public boolean checkPassword(String rawPassword, PasswordEncoder passwordEncoder) {
+        return passwordEncoder.matches(rawPassword, this.password);
+    }
+
+    public String getPassword() {
+        return password;
     }
 
 }

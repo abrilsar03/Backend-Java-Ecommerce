@@ -84,7 +84,7 @@ public abstract class JwtUtil<T extends JwtPayload> {
         }
     }
 
-    private long calculateExpiration() {
+    public long calculateExpiration() {
         return jwtExpiration * 1000L;
     }
 

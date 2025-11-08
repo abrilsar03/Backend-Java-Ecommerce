@@ -33,6 +33,7 @@ public class AuthUser extends JwtPayload implements UserDetails {
         authUser.roles = user.getRoles() == null ? Set.of() : user.getRoles();
         authUser.directPermissions =
                 user.getDirectPermissions() == null ? Set.of() : user.getDirectPermissions();
+                
         return authUser;
     }
 

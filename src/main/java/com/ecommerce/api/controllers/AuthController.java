@@ -1,5 +1,7 @@
 package com.ecommerce.api.controllers;
 
+import java.net.http.HttpRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ecommerce.api.dto.AuthResponse;
 import com.ecommerce.api.dto.LoginUserRequest;
 import com.ecommerce.api.dto.RegisterUserRequest;
+import com.ecommerce.api.enums.RoleCodeType;
 import com.ecommerce.api.services.AuthService;
 import jakarta.validation.Valid;
 
@@ -19,19 +22,29 @@ public class AuthController {
         this.authService = authService;
     }
 
+    @PostMapping("/current-user/register")
+    public AuthResponse registerCurrentUser(@Valid @RequestBody RegisterUserRequest request) {
+        return authService.register(request, RoleCodeType.CLIENT);
+
+    }
+
     @PostMapping("/register")
-    public void register(@Valid @RequestBody RegisterUserRequest req) {
-        authService.register(req);
+    public AuthResponse register(@Valid @RequestBody RegisterUserRequest request) {
+
+        return authService.register(request, RoleCodeType.ADMIN);
+
+    }
+
+
+
+    @PostMapping("/login")
+    public AuthResponse login(@Valid @RequestBody LoginUserRequest request) {
+        return ResponseEntity.ok(authService.login(request)).getBody();
     }
 
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginUserRequest req) {
-        return authService.login(req);
-    }
-
-    @PostMapping("/login")
-    public AuthResponse logOut() {
-        return authService.logOut(req);
+    public AuthResponse logOut(HttpRequest request) {
+        return ResponseEntity.ok(authService.logout(request)).getBody();
     }
 
 
