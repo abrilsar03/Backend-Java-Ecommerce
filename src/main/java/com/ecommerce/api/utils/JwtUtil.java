@@ -1,13 +1,8 @@
 package com.ecommerce.api.utils;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 import javax.crypto.SecretKey;
-import org.flywaydb.core.api.ErrorCode;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties.Jwt;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import com.ecommerce.api.model.JwtPayload;
 import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.security.Keys;
@@ -56,22 +51,27 @@ public abstract class JwtUtil<T extends JwtPayload> {
 
     public T validateAndExtractToken(String token) {
         try {
-            // Jwt<?, ?> jwt = Jwts.parser().verifyWith(jwtKey).build().parse(token);
+            Claims claims =
+                    Jwts.parser().verifyWith(jwtKey).build().parseSignedClaims(token).getPayload();
 
-            // Claims claims = (Claims) jwt.getPayload();
+            Map<String, Object> map = new HashMap<>();
+            claims.forEach(map::put);
 
-            // Map<String, Object> claimsMap = new HashMap<>();
-            // claims.forEach(claimsMap::put);
+            T payload = createPayloadInstance(claims);
 
-            // Object objectMapper;
-            // T payload = objectMapper.convertValue(claimsMap, getPayloadType());
+            if (payload != null) {
+                throw new ApiException("Token payload missing");
+            }
 
-            // if (payload.getId() == null) {
-            // throw new ApiException("Token payload missing ID");
-            // }
+            if (payload.getId() == null) {
+                Object id = map.get("id");
 
-            // return payload;
-            return null;
+                if (id == null) {
+                    throw new ApiException("Token payload missing ID");
+                }
+            }
+
+            return payload;
 
         } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
             throw new ApiException("Invalid token");
@@ -91,4 +91,6 @@ public abstract class JwtUtil<T extends JwtPayload> {
     private String getSubject(T payload) {
         return payload.getId() != null ? payload.getId().toString() : UUID.randomUUID().toString();
     }
+
+    protected abstract T createPayloadInstance(Claims claims);
 }
