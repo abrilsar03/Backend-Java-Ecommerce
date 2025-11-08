@@ -11,7 +11,7 @@ CREATE TABLE users (
   first_name TEXT NOT NULL,
   last_name  TEXT NOT NULL,
   email      TEXT NOT NULL UNIQUE,
-  phone_code TEXT,
+  phone_code TEXT,V2__permissions.sql
   phone      TEXT,
   dni        TEXT,
   dni_type   TEXT CHECK (dni_type IN ('V','E','J','DNI','CUIT','SSN')),
