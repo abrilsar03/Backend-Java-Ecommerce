@@ -9,11 +9,15 @@ import com.ecommerce.api.enums.PermissionActionType;
 import com.ecommerce.api.enums.PermissionResourceType;
 import com.ecommerce.api.enums.RoleCodeType;
 import com.ecommerce.api.utils.AuthorityUtils;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.*;
 
 public class AuthUser extends JwtPayload implements UserDetails {
-
+    @NotNull
+    @NotBlank
     private UUID id;
+
     private String email;
     private String firstName;
     private String lastName;

@@ -1,6 +1,7 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -9,6 +10,7 @@ public abstract class BasicEntity {
 
     @Id
     @GeneratedValue
+    @NotNull
     private UUID id;
 
     @Column(name = "created_at", nullable = false, updatable = false)

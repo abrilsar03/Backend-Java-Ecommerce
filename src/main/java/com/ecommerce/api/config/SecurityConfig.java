@@ -26,12 +26,13 @@ public class SecurityConfig {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/admin/**").hasRole(RoleCodeType.ADMIN.name())
-                        .requestMatchers("/users/**")
+                        .requestMatchers("/health/**").permitAll().requestMatchers("/admin/**")
+                        .hasRole(RoleCodeType.ADMIN.name()).requestMatchers("/users/**")
                         .hasAnyRole(RoleCodeType.ADMIN.name(), RoleCodeType.CLIENT.name())
                         .anyRequest().authenticated())
 
-                .addFilterBefore(new JwtAuthFilter(jwt), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(jwt, null),
+                        UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();
