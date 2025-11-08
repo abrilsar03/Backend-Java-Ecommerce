@@ -8,10 +8,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "roles")
-public class RoleEntity {
-    @Id
-    @GeneratedValue
-    private UUID id;
+public class RoleEntity extends BasicEntity {
 
     @Column(nullable = false, unique = true)
 
@@ -31,13 +28,6 @@ public class RoleEntity {
             inverseJoinColumns = @JoinColumn(name = "permission_id"))
     private Set<PermissionEntity> permissions = new HashSet<>();
 
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
 
     public RoleCode getRole() {
         return role;
