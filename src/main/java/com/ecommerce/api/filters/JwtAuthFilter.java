@@ -9,6 +9,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.ecommerce.api.exceptions.ApiException;
+import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.model.AuthUser;
 import com.ecommerce.api.repositories.UserRepository;
 import com.ecommerce.api.utils.AuthUserJwtUtils;
@@ -43,11 +44,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 AuthUser authUser = authUserJwtUtils.validateAndExtractToken(token);
 
                 if (authUser == null) {
-                    throw new ApiException("401-user");
+                    throw ExceptionFactory.unauthorized("User not authorized");
                 }
 
                 if (!userRepository.existsById(authUser.getId())) {
-                    throw new ApiException("401-user");
+                    throw ExceptionFactory.unauthorized("User not authorized");
                 }
 
                 request.setAttribute("authUser", authUser);
@@ -59,7 +60,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             } catch (ApiException ex) {
                 SecurityContextHolder.clearContext();
-                throw new ApiException("401-user");
+                throw ExceptionFactory.unauthorized("User not authorized");
             }
         }
 

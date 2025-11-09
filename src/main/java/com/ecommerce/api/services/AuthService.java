@@ -6,22 +6,18 @@ import com.ecommerce.api.dto.LoginUserRequest;
 import com.ecommerce.api.dto.RegisterUserRequest;
 import com.ecommerce.api.entities.UserEntity;
 import com.ecommerce.api.enums.RoleCodeType;
-import com.ecommerce.api.exceptions.ApiException;
+import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.model.AuthUser;
 import com.ecommerce.api.repositories.UserRepository;
 import com.ecommerce.api.utils.JwtUtil;
-import com.ecommerce.api.entities.RoleEntity;
 import com.ecommerce.api.repositories.RoleRepository;
-import jakarta.security.auth.message.AuthException;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -41,12 +37,11 @@ public class AuthService {
 
 
     @Transactional
-    public AuthResponse register(RegisterUserRequest request, RoleCodeType roleType)
-            throws AuthException {
+    public AuthResponse register(RegisterUserRequest request, RoleCodeType roleType) {
         final String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
 
         if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw new ApiException("409-userEmailExists");
+            throw ExceptionFactory.emailAlreadyExist("Email already exists");
         }
 
         var user = this.buildUserEntity(request);
@@ -54,7 +49,7 @@ public class AuthService {
         var role = roleRepository.findByCode(roleType.toString());
 
         if (role == null) {
-            throw new ApiException("409-roleNotFound");
+            throw ExceptionFactory.roleNotFound("Role not found");
         }
 
         user.setRoles(Set.of(role));
@@ -78,15 +73,15 @@ public class AuthService {
         var user = userRepository.findByEmailIgnoreCase(email);
 
         if (user == null) {
-            throw new ApiException("401-credentials");
+            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
         }
 
         if (!user.getActive()) {
-            throw new ApiException("401-credentials");
+            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
         }
 
         if (user.checkPassword(request.getPassword(), passwordEncoder)) {
-            throw new ApiException("401-credentials");
+            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
         }
 
         userRepository.save(user);

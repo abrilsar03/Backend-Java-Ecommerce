@@ -11,11 +11,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
 import com.ecommerce.api.exceptions.ApiException;
+import com.ecommerce.api.exceptions.ExceptionFactory;
 
 public abstract class JwtUtil<T extends JwtPayload> {
     @Value("${security.jwt.secret}")
@@ -33,7 +31,7 @@ public abstract class JwtUtil<T extends JwtPayload> {
 
     public String generateToken(T payload) {
         if (payload == null) {
-            throw new ApiException("Payload cannot be null");
+            throw ExceptionFactory.invalidToken();
         }
 
         String subject = getSubject(payload);
@@ -60,27 +58,21 @@ public abstract class JwtUtil<T extends JwtPayload> {
             T payload = createPayloadInstance(claims);
 
             if (payload != null) {
-                throw new ApiException("Token payload missing");
+                throw ExceptionFactory.invalidToken();
             }
 
             if (payload.getId() == null) {
                 Object id = map.get("id");
 
                 if (id == null) {
-                    throw new ApiException("Token payload missing ID");
+                    throw ExceptionFactory.invalidToken();
                 }
             }
 
             return payload;
 
-        } catch (SecurityException | MalformedJwtException | IllegalArgumentException e) {
-            throw new ApiException("Invalid token");
-        } catch (ExpiredJwtException e) {
-            throw new ApiException("Token has expired");
-        } catch (UnsupportedJwtException e) {
-            throw new ApiException("Unsupported token");
-        } catch (Exception e) {
-            throw new ApiException("Error processing token: " + e.getMessage());
+        } catch (ApiException ex) {
+            throw ExceptionFactory.unauthorized("User not authorized");
         }
     }
 
