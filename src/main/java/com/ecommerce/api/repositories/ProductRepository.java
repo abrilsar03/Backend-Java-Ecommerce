@@ -18,17 +18,4 @@ public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
       """)
   Page<ProductEntity> searchByTitle(@Param("q") String query, Pageable pageable);
 
-  @Query("""
-        SELECT p FROM ProductEntity p
-        JOIN p.categories c
-        WHERE c.id = :categoryId
-      """)
-  Page<ProductEntity> findAllByCategory(@Param("categoryId") UUID categoryId, Pageable pageable);
-
-  @Query("""
-        SELECT p FROM ProductEntity p
-        JOIN p.tags t
-        WHERE t.id = :tagId
-      """)
-  Page<ProductEntity> findAllByTag(@Param("tagId") UUID tagId, Pageable pageable);
 }

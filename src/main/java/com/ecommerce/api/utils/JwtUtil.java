@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import com.ecommerce.api.exceptions.ApiException;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 
 public abstract class JwtUtil<T extends JwtPayload> {

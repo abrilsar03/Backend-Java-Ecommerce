@@ -1,5 +1,6 @@
 package com.ecommerce.api.entities;
 
+import java.math.BigDecimal;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -12,29 +13,35 @@ public class ProductEntity extends BasicEntity {
 
     @NotBlank
     @Size(max = 255)
+    @Column(name = "title", nullable = false, length = 255)
     private String title;
 
     @NotBlank
-    @Size(max = 255, min = 3)
+    @Size(min = 3, max = 255)
+    @Column(name = "sku", nullable = false, unique = true, length = 255)
     private String sku;
 
     @Size(max = 4000)
+    @Column(name = "description", length = 4000)
     private String description;
 
     @Min(0)
-    private Integer price_cents;
+    @Column(name = "price_cents", nullable = false)
+    private Integer priceCents;
 
-    @Column(name = "photo_url")
-    @NotBlank
     @Size(max = 2000)
+    @Column(name = "photo_url", length = 2000)
     private String photoUrl;
 
-    @Min(0)
-    private Double tax;
+    @Column(name = "tax", nullable = false, precision = 20, scale = 8)
+    private BigDecimal tax = BigDecimal.ZERO;
+
+    @Column(name = "active", nullable = false)
+    private Boolean active = true;
+
 
     @Min(0)
     @Column(name = "stock")
-    @NotBlank
     private Integer stock;
 
     public String getTitle() {
@@ -62,11 +69,11 @@ public class ProductEntity extends BasicEntity {
     }
 
     public Integer getPriceCents() {
-        return price_cents;
+        return priceCents;
     }
 
-    public void setPriceCents(Integer price_cents) {
-        this.price_cents = price_cents;
+    public void setPriceCents(Integer priceCents) {
+        this.priceCents = priceCents;
     }
 
     public String getPhotoUrl() {
@@ -77,12 +84,20 @@ public class ProductEntity extends BasicEntity {
         this.photoUrl = photoUrl;
     }
 
-    public Double getTax() {
+    public BigDecimal getTax() {
         return tax;
     }
 
-    public void setTax(Double tax) {
+    public void setTax(BigDecimal tax) {
         this.tax = tax;
+    }
+
+    public Boolean isActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 
     public Integer getStock() {
@@ -94,4 +109,3 @@ public class ProductEntity extends BasicEntity {
     }
 
 }
-

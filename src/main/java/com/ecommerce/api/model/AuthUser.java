@@ -1,28 +1,27 @@
 package com.ecommerce.api.model;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import com.ecommerce.api.entities.PermissionEntity;
 import com.ecommerce.api.entities.RoleEntity;
 import com.ecommerce.api.entities.UserEntity;
-import com.ecommerce.api.enums.PermissionActionType;
-import com.ecommerce.api.enums.PermissionResourceType;
-import com.ecommerce.api.enums.RoleCodeType;
 import com.ecommerce.api.utils.AuthorityUtils;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.*;
+import java.util.UUID;
 
 public class AuthUser extends JwtPayload implements UserDetails {
-    @NotNull
-    @NotBlank
+
     private UUID id;
 
     private String email;
     private String firstName;
     private String lastName;
+
     private Set<RoleEntity> roles = new HashSet<>();
     private Set<PermissionEntity> directPermissions = new HashSet<>();
+
+    public AuthUser() {}
 
     public static AuthUser fromUser(UserEntity user) {
         AuthUser authUser = new AuthUser();
@@ -30,10 +29,9 @@ public class AuthUser extends JwtPayload implements UserDetails {
         authUser.email = user.getEmail();
         authUser.firstName = user.getFirstName();
         authUser.lastName = user.getLastName();
-        authUser.roles = user.getRoles() == null ? Set.of() : user.getRoles();
+        authUser.roles = Optional.ofNullable(user.getRoles()).orElseGet(Set::of);
         authUser.directPermissions =
-                user.getDirectPermissions() == null ? Set.of() : user.getDirectPermissions();
-                
+                Optional.ofNullable(user.getDirectPermissions()).orElseGet(Set::of);
         return authUser;
     }
 
@@ -44,70 +42,58 @@ public class AuthUser extends JwtPayload implements UserDetails {
         map.put("email", email);
         map.put("firstName", firstName);
         map.put("lastName", lastName);
-
-        List<String> roleStrings = roles.stream().map(AuthorityUtils::convertRoleToText)
-                .filter(Objects::nonNull).toList();
-
-        Set<String> permissionStrings = new HashSet<>();
-        directPermissions.stream().map(AuthorityUtils::convertPermissionToText)
-                .filter(Objects::nonNull).forEach(permissionStrings::add);
-
-        roles.forEach(
-                role -> role.getPermissions().stream().map(AuthorityUtils::convertPermissionToText)
-                        .filter(Objects::nonNull).forEach(permissionStrings::add));
-
-        map.put("roles", roleStrings);
-        map.put("permissions", List.copyOf(permissionStrings));
         return map;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void fromMap(Map<String, Object> map) {
-        Object rawId = map.get("id");
-        this.id = (rawId instanceof String s && !s.isBlank()) ? UUID.fromString(s) : null;
-        this.email = (String) map.get("email");
-        this.firstName = (String) map.get("firstName");
-        this.lastName = (String) map.get("lastName");
+        Object subject = map.get("sub");
+        if (subject instanceof String s && !s.isBlank()) {
+            try {
+                this.id = UUID.fromString(s);
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (this.id == null) {
+            Object rawId = map.get("id");
+            if (rawId instanceof String s && !s.isBlank()) {
+                try {
+                    this.id = UUID.fromString(s);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        if (this.id == null) {
+            Object rawUserId = map.get("userId");
+            if (rawUserId instanceof String s && !s.isBlank()) {
+                try {
+                    this.id = UUID.fromString(s);
+                } catch (Exception ignored) {
+                }
+            }
+        }
+
+        Object rawEmail = map.get("email");
+        if (rawEmail instanceof String s)
+            this.email = s;
+
+        Object rawFirstName = map.get("firstName");
+        if (rawFirstName instanceof String s)
+            this.firstName = s;
+
+        Object rawLastName = map.get("lastName");
+        if (rawLastName instanceof String s)
+            this.lastName = s;
 
         this.roles = new HashSet<>();
-        Object rawRoles = map.get("roles");
-        if (rawRoles instanceof Collection<?> collection) {
-            for (Object item : collection) {
-                if (item instanceof String roleName && !roleName.isBlank()) {
-                    RoleEntity roleEntity = new RoleEntity();
-                    try {
-                        String code =
-                                roleName.startsWith("ROLE_") ? roleName.substring(5) : roleName;
-                        roleEntity.setRole(RoleCodeType.valueOf(code));
-                        this.roles.add(roleEntity);
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
-            }
-        }
-
         this.directPermissions = new HashSet<>();
-
-        Object rawPermissions = map.get("permissions");
-        if (rawPermissions instanceof Collection<?> collection) {
-            for (Object item : collection) {
-                if (item instanceof String permissionText && permissionText.contains(":")) {
-                    String[] parts = permissionText.split(":", 2);
-                    PermissionEntity permissionEntity = new PermissionEntity();
-                    try {
-                        permissionEntity.setResource(PermissionResourceType.valueOf(parts[0]));
-                        permissionEntity.setAction(PermissionActionType.valueOf(parts[1]));
-                        this.directPermissions.add(permissionEntity);
-                    } catch (IllegalArgumentException ignored) {
-                    }
-                }
-            }
-        }
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+
         Set<GrantedAuthority> authorities = new HashSet<>();
 
         roles.stream().map(AuthorityUtils::convertRoleToAuthority).filter(Objects::nonNull)
@@ -151,5 +137,53 @@ public class AuthUser extends JwtPayload implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Set<RoleEntity> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<RoleEntity> roles) {
+        this.roles = roles;
+    }
+
+    public Set<PermissionEntity> getDirectPermissions() {
+        return directPermissions;
+    }
+
+    public void setDirectPermissions(Set<PermissionEntity> directPermissions) {
+        this.directPermissions = directPermissions;
     }
 }
