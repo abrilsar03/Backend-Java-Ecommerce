@@ -1,4 +1,4 @@
-package com.ecommerce.api.dto;
+package com.ecommerce.api.dto.auth;
 
 public class AuthResponse {
     private String accessToken;

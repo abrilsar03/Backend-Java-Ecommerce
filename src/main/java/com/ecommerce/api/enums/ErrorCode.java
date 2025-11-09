@@ -13,6 +13,7 @@ public enum ErrorCode {
 
     USER_NOT_FOUND("404", "User not found"),
 
+
     USER_ALREADY_EXISTS("400", "User already exists"),
 
     USER_INVALID_DATA("400", "Invalid user data"),
@@ -37,6 +38,7 @@ public enum ErrorCode {
 
     SYSTEM_PARAM_EXISTS("409", "System parameter already exists"),
 
+    SKU_EXISTS("409", "Sku already exists"),
 
     SYSTEM_PARAM_NOT_FOUND("404", "System parameter not found");
 

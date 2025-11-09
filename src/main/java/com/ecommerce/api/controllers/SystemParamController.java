@@ -1,10 +1,10 @@
 // controllers/SystemParamController.java
 package com.ecommerce.api.controllers;
 
-import com.ecommerce.api.dto.PaginatedResponse;
-import com.ecommerce.api.dto.SystemParamResponse;
-import com.ecommerce.api.dto.UpsertSystemParamRequest;
-import com.ecommerce.api.dto.UpdateSystemParamRequest;
+import com.ecommerce.api.dto.systemParams.SystemParamResponse;
+import com.ecommerce.api.dto.systemParams.UpsertSystemParamRequest;
+import com.ecommerce.api.dto.common.PaginatedResponse;
+import com.ecommerce.api.dto.systemParams.UpdateSystemParamRequest;
 import com.ecommerce.api.enums.SystemParamType;
 import com.ecommerce.api.services.SystemParamService;
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public class SystemParamController {
     }
 
     @GetMapping("/{key}")
-    public com.ecommerce.api.dto.SystemParamResponse getOne(
+    public com.ecommerce.api.dto.systemParams.SystemParamResponse getOne(
             @PathVariable("key") SystemParamType key) {
         return service.findOne(key);
     }

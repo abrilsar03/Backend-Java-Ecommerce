@@ -39,4 +39,12 @@ public class ExceptionFactory {
     public static ApiException systemParamAlreadyExists() {
         return new ApiException(ErrorCode.SYSTEM_PARAM_EXISTS);
     }
+
+    public static ApiException skuAlreadyExists() {
+        return new ApiException(ErrorCode.SKU_EXISTS);
+    }
+
+    public static ApiException productNotFound() {
+        return new ApiException(ErrorCode.PRODUCT_NOT_FOUND);
+    }
 }
