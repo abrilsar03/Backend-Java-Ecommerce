@@ -2,8 +2,6 @@ package com.ecommerce.api.utils;
 
 import com.ecommerce.api.entities.PermissionEntity;
 import com.ecommerce.api.entities.RoleEntity;
-import java.util.HashSet;
-import java.util.Set;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 

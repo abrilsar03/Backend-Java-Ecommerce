@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE roles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  code TEXT NOT NULL UNIQUE, CHECK (code IN ('ADMIN', 'USER')),
+  role TEXT NOT NULL UNIQUE, CHECK (role IN ('ADMIN', 'CLIENT')),
   name TEXT NOT NULL
 );
 
@@ -14,8 +14,9 @@ CREATE TABLE users (
   password   TEXT NOT NULL,
   phone_code TEXT,
   phone      TEXT,
-  dni        TEXT,
-  dni_type   TEXT CHECK (dni_type IN ('V','E','J','DNI','CUIT','SSN')),
+  documentNumber        TEXT,
+  documentType   TEXT CHECK (documentType IN ('V','E','J','DNI','CUIT','SSN')),
+  address        TEXT NOT NULL,
   active     BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ

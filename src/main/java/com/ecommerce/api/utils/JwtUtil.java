@@ -52,26 +52,15 @@ public abstract class JwtUtil<T extends JwtPayload> {
             Claims claims =
                     Jwts.parser().verifyWith(jwtKey).build().parseSignedClaims(token).getPayload();
 
-            Map<String, Object> map = new HashMap<>();
-            claims.forEach(map::put);
-
             T payload = createPayloadInstance(claims);
 
-            if (payload != null) {
+            if (payload == null || payload.getId() == null) {
                 throw ExceptionFactory.invalidToken();
-            }
-
-            if (payload.getId() == null) {
-                Object id = map.get("id");
-
-                if (id == null) {
-                    throw ExceptionFactory.invalidToken();
-                }
             }
 
             return payload;
 
-        } catch (ApiException ex) {
+        } catch (Exception e) {
             throw ExceptionFactory.unauthorized("User not authorized");
         }
     }

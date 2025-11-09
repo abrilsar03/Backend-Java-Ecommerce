@@ -1,6 +1,5 @@
 package com.ecommerce.api.controllers;
 
-import java.net.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,11 +40,5 @@ public class AuthController {
     public AuthResponse login(@Valid @RequestBody LoginUserRequest request) {
         return ResponseEntity.ok(authService.login(request)).getBody();
     }
-
-    @PostMapping("/login")
-    public AuthResponse logOut(HttpRequest request) {
-        return ResponseEntity.ok(authService.logout(request)).getBody();
-    }
-
 
 }

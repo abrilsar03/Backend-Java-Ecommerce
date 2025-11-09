@@ -31,6 +31,10 @@ public class UserEntity extends BasicEntity {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Column(name = "address")
+    @Size(max = 255)
+    private String address;
+
     @Column(name = "document_number", nullable = false, length = 20)
     private String documentNumber;
 
@@ -132,5 +136,12 @@ public class UserEntity extends BasicEntity {
         return password;
     }
 
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
 }
 

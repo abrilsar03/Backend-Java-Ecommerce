@@ -46,7 +46,7 @@ public class AuthService {
 
         var user = this.buildUserEntity(request);
 
-        var role = roleRepository.findByCode(roleType.toString());
+        var role = roleRepository.findByRole(roleType.toString());
 
         if (role == null) {
             throw ExceptionFactory.roleNotFound("Role not found");
@@ -55,8 +55,6 @@ public class AuthService {
         user.setRoles(Set.of(role));
 
         userRepository.save(user);
-
-        // Falta la logica del addres y del document
 
         var authUser = AuthUser.fromUser(user);
 

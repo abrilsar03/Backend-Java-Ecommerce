@@ -4,9 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.util.HashSet;
-import java.util.Set;
-import com.ecommerce.api.enums.TaxClassType;
+
 
 @Entity
 @Table(name = "products")
@@ -24,28 +22,20 @@ public class ProductEntity extends BasicEntity {
     private String description;
 
     @Min(0)
-    private Integer priceCents;
+    private Integer price_cents;
 
-    @ManyToOne
-    @JoinColumn(name = "currency_id")
-    private CurrencyEntity currency;
+    @Column(name = "photo_url")
+    @NotBlank
+    @Size(max = 2000)
+    private String photoUrl;
 
-    @Enumerated(EnumType.STRING)
-    private TaxClassType taxClass = TaxClassType.STANDARD;
+    @Min(0)
+    private Double tax;
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductPhotoEntity> photos = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(name = "product_categories", joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "category_id"))
-    private Set<CategoryEntity> categories = new HashSet<>();
-
-    @ManyToMany
-    @JoinTable(name = "product_tags", joinColumns = @JoinColumn(name = "product_id"),
-            inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private Set<TagEntity> tags = new HashSet<>();
-
+    @Min(0)
+    @Column(name = "stock")
+    @NotBlank
+    private Integer stock;
 
     public String getTitle() {
         return title;
@@ -72,51 +62,36 @@ public class ProductEntity extends BasicEntity {
     }
 
     public Integer getPriceCents() {
-        return priceCents;
+        return price_cents;
     }
 
-    public void setPriceCents(Integer priceCents) {
-        this.priceCents = priceCents;
+    public void setPriceCents(Integer price_cents) {
+        this.price_cents = price_cents;
     }
 
-    public CurrencyEntity getCurrency() {
-        return currency;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setCurrency(CurrencyEntity currency) {
-        this.currency = currency;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 
-    public TaxClassType getTaxClass() {
-        return taxClass;
+    public Double getTax() {
+        return tax;
     }
 
-    public void setTaxClass(TaxClassType taxClass) {
-        this.taxClass = taxClass;
+    public void setTax(Double tax) {
+        this.tax = tax;
     }
 
-    public Set<ProductPhotoEntity> getPhotos() {
-        return photos;
+    public Integer getStock() {
+        return stock;
     }
 
-    public void setPhotos(Set<ProductPhotoEntity> photos) {
-        this.photos = photos;
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
-    public Set<CategoryEntity> getCategories() {
-        return categories;
-    }
-
-    public void setCategories(Set<CategoryEntity> categories) {
-        this.categories = categories;
-    }
-
-    public Set<TagEntity> getTags() {
-        return tags;
-    }
-
-    public void setTags(Set<TagEntity> tags) {
-        this.tags = tags;
-    }
 }
 
