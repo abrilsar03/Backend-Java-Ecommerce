@@ -21,10 +21,14 @@ public class ExceptionFactory {
     }
 
     public static ApiException roleNotFound(String details) {
-        return new ApiException(ErrorCode.USER_NOT_FOUND, details);
+        return new ApiException(ErrorCode.ROLE_NOT_FOUND, details);
     }
 
     public static ApiException emailAlreadyExist(String details) {
         return new ApiException(ErrorCode.EMAIL_ALREADY_EXISTS, details);
+    }
+
+    public static ApiException userNotFound() {
+        return new ApiException(ErrorCode.USER_NOT_FOUND);
     }
 }
