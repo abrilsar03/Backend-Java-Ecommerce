@@ -33,7 +33,14 @@ public enum ErrorCode {
 
     ROLE_NOT_FOUND("404", "Role not found"),
 
-    EMAIL_ALREADY_EXISTS("400", "Email already exists");
+    EMAIL_ALREADY_EXISTS("400", "Email already exists"),
+
+    SYSTEM_PARAM_EXISTS("409", "System parameter already exists"),
+
+
+    SYSTEM_PARAM_NOT_FOUND("404", "System parameter not found");
+
+
 
     private final String code;
     private final String defaultMessage;

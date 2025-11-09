@@ -24,11 +24,19 @@ public class ExceptionFactory {
         return new ApiException(ErrorCode.ROLE_NOT_FOUND, details);
     }
 
+    public static ApiException systemParamNotFound() {
+        return new ApiException(ErrorCode.SYSTEM_PARAM_NOT_FOUND);
+    }
+
     public static ApiException emailAlreadyExist(String details) {
         return new ApiException(ErrorCode.EMAIL_ALREADY_EXISTS, details);
     }
 
     public static ApiException userNotFound() {
         return new ApiException(ErrorCode.USER_NOT_FOUND);
+    }
+
+    public static ApiException systemParamAlreadyExists() {
+        return new ApiException(ErrorCode.SYSTEM_PARAM_EXISTS);
     }
 }
