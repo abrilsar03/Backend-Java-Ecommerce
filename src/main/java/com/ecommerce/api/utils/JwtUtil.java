@@ -15,10 +15,10 @@ import io.jsonwebtoken.Jwts;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 
 public abstract class JwtUtil<T extends JwtPayload> {
-    @Value("${security.jwt.secret}")
+    @Value("${jwt.secret}")
     protected String jwtSecret;
 
-    @Value("${security.jwt.expires-in}")
+    @Value("${jwt.expires}")
     protected long jwtExpiration;
 
     protected SecretKey jwtKey;

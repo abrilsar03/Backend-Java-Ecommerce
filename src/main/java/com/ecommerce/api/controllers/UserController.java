@@ -21,14 +21,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    @RequestMapping("/current-user/profile")
+    @GetMapping("/current-user/profile")
     public ProfileResponse getCurrentUserProfile(@AuthenticationPrincipal AuthUser auth) {
         return userService.findUser(auth.getId());
     }
 
-    @PatchMapping
-    @RequestMapping("/current-user/profile")
+    @PatchMapping("/current-user/profile")
     public ProfileResponse updateCurrentUserProfile(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody UpdateUserRequest body) {
         return userService.updateUser(auth.getId(), body);

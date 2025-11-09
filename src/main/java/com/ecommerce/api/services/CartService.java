@@ -15,19 +15,19 @@ import java.util.stream.Collectors;
 public class CartService {
 
     private final CartRepository cartRepository;
-    private final ProductRepository productRepo;
-    private final UserRepository userRepo;
+    private final ProductRepository productRepository;
+    private final UserRepository userRepository;
 
-    public CartService(CartRepository cartRepository, ProductRepository productRepo,
-            UserRepository userRepo) {
+    public CartService(CartRepository cartRepository, ProductRepository productRepository,
+            UserRepository userRepository) {
         this.cartRepository = cartRepository;
-        this.productRepo = productRepo;
-        this.userRepo = userRepo;
+        this.productRepository = productRepository;
+        this.userRepository = userRepository;
     }
 
     public CartResponse findActive(UUID userId) {
-        CartEntity cart =
-                cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE);
+        CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                .orElse(null);
 
         if (cart == null) {
             return empty(userId);
@@ -43,17 +43,14 @@ public class CartService {
             throw ExceptionFactory.missingData("items are required");
         }
 
-        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE);
-
-        if (cart == null) {
-            throw ExceptionFactory.cartNotFound();
-        }
+        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                .orElseThrow(() -> ExceptionFactory.cartNotFound());
 
         Map<UUID, CartItemEntity> byProduct = cart.getItems().stream()
                 .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
 
         for (var in : request.getItems()) {
-            var product = productRepo.findById(in.getProductId())
+            var product = productRepository.findById(in.getProductId())
                     .orElseThrow(() -> ExceptionFactory.productNotFound());
 
             var existing = byProduct.get(product.getId());
@@ -67,7 +64,7 @@ public class CartService {
                 byProduct.put(product.getId(), it);
             } else {
                 int newQty = existing.getQuantity() + in.getQuantity();
-                existing.setQuantity(Math.min(newQty, 100)); // tope de seguridad
+                existing.setQuantity(Math.min(newQty, 100));
             }
         }
 
@@ -83,7 +80,8 @@ public class CartService {
             throw ExceptionFactory.missingData("items are required");
         }
 
-        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE);
+        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                .orElse(null);
 
         if (cart == null) {
             cart = createActiveCart(userId);
@@ -93,7 +91,7 @@ public class CartService {
                 .collect(Collectors.toMap(item -> item.getProduct().getId(), item -> item));
 
 
-        var product = productRepo.findById(request.getProductId())
+        var product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> ExceptionFactory.productNotFound());
 
         var targetQty = Math.max(1, Math.min(request.getQuantity(), 100));
@@ -121,11 +119,9 @@ public class CartService {
             return findActive(userId);
         }
 
-        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE);
+        var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                .orElseThrow(() -> ExceptionFactory.cartNotFound());
 
-        if (cart == null) {
-            throw ExceptionFactory.cartNotFound();
-        }
 
         Set<UUID> ids = new HashSet<>(request.getProductIds());
 
@@ -135,7 +131,8 @@ public class CartService {
     }
 
     private CartEntity createActiveCart(UUID userId) {
-        var user = userRepo.findById(userId).orElseThrow(() -> ExceptionFactory.userNotFound());
+        var user =
+                userRepository.findById(userId).orElseThrow(() -> ExceptionFactory.userNotFound());
 
         var cart = new CartEntity();
 
