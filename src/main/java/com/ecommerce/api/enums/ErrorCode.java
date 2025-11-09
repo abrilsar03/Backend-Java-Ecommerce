@@ -45,9 +45,11 @@ public enum ErrorCode {
     MISSING_DATA("400", "Missing parameter"),
 
 
-    SYSTEM_PARAM_NOT_FOUND("404", "System parameter not found");
+    SYSTEM_PARAM_NOT_FOUND("404", "System parameter not found"),
 
+    INSUFFICIENT_STOCK("422", "Insufficient stock available"),
 
+    DISABLE_PRODUCT("400", "The product is not available at the moment");
 
     private final String code;
     private final String defaultMessage;

@@ -55,4 +55,8 @@ public class ExceptionFactory {
     public static ApiException missingData(String details) {
         return new ApiException(ErrorCode.MISSING_DATA, details);
     }
+
+    public static ApiException insufficientStock() {
+        return new ApiException(ErrorCode.INSUFFICIENT_STOCK);
+    }
 }

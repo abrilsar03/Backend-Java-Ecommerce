@@ -7,7 +7,7 @@ import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -27,11 +27,7 @@ public class CartService {
 
     public CartResponse findActive(UUID userId) {
         CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
-                .orElse(null);
-
-        if (cart == null) {
-            return empty(userId);
-        }
+                .orElseGet(() -> createActiveCart(userId));
 
         return parseResponse(cart);
     }
@@ -49,22 +45,22 @@ public class CartService {
         Map<UUID, CartItemEntity> byProduct = cart.getItems().stream()
                 .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
 
-        for (var in : request.getItems()) {
-            var product = productRepository.findById(in.getProductId())
+        for (var item : request.getItems()) {
+            var product = productRepository.findById(item.getProductId())
                     .orElseThrow(() -> ExceptionFactory.productNotFound());
 
             var existing = byProduct.get(product.getId());
 
+            int desired = (existing == null ? 0 : existing.getQuantity()) + item.getQuantity();
+
+            desired = clampUiLimits(desired);
+
             if (existing == null) {
-                var it = new CartItemEntity();
-                it.setCart(cart);
-                it.setProduct(product);
-                it.setQuantity(in.getQuantity());
-                cart.getItems().add(it);
-                byProduct.put(product.getId(), it);
+                var cartItem = createCartItem(cart, product, desired);
+                cart.getItems().add(cartItem);
+                byProduct.put(product.getId(), cartItem);
             } else {
-                int newQty = existing.getQuantity() + in.getQuantity();
-                existing.setQuantity(Math.min(newQty, 100));
+                existing.setQuantity(desired);
             }
         }
 
@@ -76,39 +72,29 @@ public class CartService {
     @Transactional
     public CartResponse setQuantities(UUID userId, UpdateItemRequest request) {
 
-        if (request.getProductId() == null) {
-            throw ExceptionFactory.missingData("items are required");
-        }
-
         var cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
-                .orElse(null);
-
-        if (cart == null) {
-            cart = createActiveCart(userId);
-        }
+                .orElseGet(() -> createActiveCart(userId));
 
         Map<UUID, CartItemEntity> byProduct = cart.getItems().stream()
-                .collect(Collectors.toMap(item -> item.getProduct().getId(), item -> item));
-
+                .collect(Collectors.toMap(i -> i.getProduct().getId(), i -> i));
 
         var product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> ExceptionFactory.productNotFound());
 
-        var targetQty = Math.max(1, Math.min(request.getQuantity(), 100));
+        int target = clampUiLimits(request.getQuantity());
 
-        var existingCart = byProduct.get(product.getId());
+        assertProductActive(product);
+        assertStockForTargetQuantity(product, target);
 
-        if (existingCart == null) {
-            var it = new CartItemEntity();
-            it.setCart(cart);
-            it.setProduct(product);
-            it.setQuantity(targetQty);
-            cart.getItems().add(it);
-            byProduct.put(product.getId(), it);
+        var existing = byProduct.get(product.getId());
+
+        if (existing == null) {
+            var item = createCartItem(cart, product, target);
+            cart.getItems().add(item);
+            byProduct.put(product.getId(), item);
         } else {
-            existingCart.setQuantity(targetQty);
+            existing.setQuantity(target);
         }
-
 
         return parseResponse(cartRepository.save(cart));
     }
@@ -143,15 +129,6 @@ public class CartService {
         return cartRepository.save(cart);
     }
 
-    private CartResponse empty(UUID userId) {
-        var cartResponse = new CartResponse();
-        cartResponse.setCartId(null);
-        cartResponse.setUserId(userId);
-        cartResponse.setStatus(CartStatusType.ACTIVE);
-        cartResponse.setItems(List.of());
-        return cartResponse;
-    }
-
     private CartResponse parseResponse(CartEntity cart) {
         var cartResponse = new CartResponse();
 
@@ -161,10 +138,10 @@ public class CartService {
 
         cartResponse.setStatus(cart.getStatus());
 
-        var items = cart.getItems().stream().map(ci -> {
+        var items = cart.getItems().stream().map(cartItem -> {
             var response = new CartItemResponse();
 
-            var product = ci.getProduct();
+            var product = cartItem.getProduct();
 
             response.setProductId(product.getId());
 
@@ -172,7 +149,7 @@ public class CartService {
 
             response.setSku(product.getSku());
 
-            response.setQuantity(ci.getQuantity());
+            response.setQuantity(cartItem.getQuantity());
 
             response.setPriceCents(product.getPriceCents());
 
@@ -183,4 +160,37 @@ public class CartService {
 
         return cartResponse;
     }
+
+    private void assertProductActive(ProductEntity p) {
+        if (Boolean.FALSE.equals(p.getActive())) {
+            throw ExceptionFactory.productNotFound();
+        }
+    }
+
+    private void assertStockForTargetQuantity(ProductEntity product, int targetQty) {
+        Integer stock = product.getStock();
+
+        if (stock != null && targetQty > stock) {
+            throw ExceptionFactory.insufficientStock();
+        }
+    }
+
+    private int clampUiLimits(int quantity) {
+        if (quantity < 1)
+            return 1;
+
+        if (quantity > 100)
+            return 100;
+
+        return quantity;
+    }
+
+    private CartItemEntity createCartItem(CartEntity cart, ProductEntity product, int desired) {
+        var cartItem = new CartItemEntity();
+        cartItem.setCart(cart);
+        cartItem.setProduct(product);
+        cartItem.setQuantity(desired);
+        return cartItem;
+    }
+
 }
