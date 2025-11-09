@@ -47,4 +47,12 @@ public class ExceptionFactory {
     public static ApiException productNotFound() {
         return new ApiException(ErrorCode.PRODUCT_NOT_FOUND);
     }
+
+    public static ApiException cartNotFound() {
+        return new ApiException(ErrorCode.CART_NOT_FOUND);
+    }
+
+    public static ApiException missingData(String details) {
+        return new ApiException(ErrorCode.MISSING_DATA, details);
+    }
 }

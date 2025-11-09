@@ -1,6 +1,6 @@
 package com.ecommerce.api.enums;
 
 
-public enum CartStatus {
+public enum CartStatusType {
     ACTIVE, CLOSED
 }

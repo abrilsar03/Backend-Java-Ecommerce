@@ -1,4 +1,3 @@
-// services/ProductService.java
 package com.ecommerce.api.services;
 
 import com.ecommerce.api.dto.products.CreateProductRequest;
@@ -112,17 +111,17 @@ public class ProductService {
     }
 
     private ProductResponse parseResponse(ProductEntity product) {
-        var dto = new ProductResponse();
-        dto.setId(product.getId());
-        dto.setTitle(product.getTitle());
-        dto.setSku(product.getSku());
-        dto.setDescription(product.getDescription());
-        dto.setPriceCents(product.getPriceCents());
-        dto.setPhotoUrl(product.getPhotoUrl());
-        dto.setTax(product.getTax());
-        dto.setActive(product.getActive());
-        dto.setStock(product.getStock());
-        return dto;
+        var productResponse = new ProductResponse();
+        productResponse.setId(product.getId());
+        productResponse.setTitle(product.getTitle());
+        productResponse.setSku(product.getSku());
+        productResponse.setDescription(product.getDescription());
+        productResponse.setPriceCents(product.getPriceCents());
+        productResponse.setPhotoUrl(product.getPhotoUrl());
+        productResponse.setTax(product.getTax());
+        productResponse.setActive(product.getActive());
+        productResponse.setStock(product.getStock());
+        return productResponse;
     }
 
     private ProductEntity buildProductBody(CreateProductRequest request) {

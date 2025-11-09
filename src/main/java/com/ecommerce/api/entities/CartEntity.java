@@ -1,6 +1,6 @@
 package com.ecommerce.api.entities;
 
-import com.ecommerce.api.enums.CartStatus;
+import com.ecommerce.api.enums.CartStatusType;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -16,7 +16,7 @@ public class CartEntity extends BasicEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CartStatus status = CartStatus.ACTIVE;
+    private CartStatusType status = CartStatusType.ACTIVE;
 
     @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true,
             fetch = FetchType.LAZY)
@@ -32,11 +32,11 @@ public class CartEntity extends BasicEntity {
         this.user = user;
     }
 
-    public CartStatus getStatus() {
+    public CartStatusType getStatus() {
         return status;
     }
 
-    public void setStatus(CartStatus status) {
+    public void setStatus(CartStatusType status) {
         this.status = status;
     }
 

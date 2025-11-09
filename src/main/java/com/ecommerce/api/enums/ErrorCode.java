@@ -20,6 +20,8 @@ public enum ErrorCode {
 
     PRODUCT_NOT_FOUND("404", "Product not found"),
 
+    CART_NOT_FOUND("404", "Cart not found"),
+
     PRODUCT_OUT_OF_STOCK("400", "Product out of stock"),
 
     PRODUCT_INVALID_PRICE("400", "Invalid product price"),
@@ -39,6 +41,9 @@ public enum ErrorCode {
     SYSTEM_PARAM_EXISTS("409", "System parameter already exists"),
 
     SKU_EXISTS("409", "Sku already exists"),
+
+    MISSING_DATA("400", "Missing parameter"),
+
 
     SYSTEM_PARAM_NOT_FOUND("404", "System parameter not found");
 
