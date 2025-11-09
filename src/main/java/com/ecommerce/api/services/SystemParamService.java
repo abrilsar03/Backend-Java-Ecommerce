@@ -1,10 +1,10 @@
 // services/SystemParamService.java
 package com.ecommerce.api.services;
 
-import com.ecommerce.api.dto.PaginatedResponse;
-import com.ecommerce.api.dto.SystemParamResponse;
-import com.ecommerce.api.dto.UpsertSystemParamRequest;
-import com.ecommerce.api.dto.UpdateSystemParamRequest;
+import com.ecommerce.api.dto.systemParams.SystemParamResponse;
+import com.ecommerce.api.dto.systemParams.UpsertSystemParamRequest;
+import com.ecommerce.api.dto.common.PaginatedResponse;
+import com.ecommerce.api.dto.systemParams.UpdateSystemParamRequest;
 import com.ecommerce.api.entities.SystemParamEntity;
 import com.ecommerce.api.enums.SystemParamType;
 import com.ecommerce.api.exceptions.ExceptionFactory;

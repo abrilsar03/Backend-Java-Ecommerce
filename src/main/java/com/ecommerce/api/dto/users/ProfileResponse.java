@@ -1,22 +1,32 @@
-package com.ecommerce.api.dto;
+package com.ecommerce.api.dto.users;
 
-import jakarta.validation.constraints.Size;
 
-public class updateUserRequest {
-    @Size(min = 1, max = 60)
+import java.util.UUID;
+
+public class ProfileResponse {
+    private UUID id;
+    private String email;
     private String firstName;
-
-    @Size(min = 1, max = 60)
     private String lastName;
-
-    @Size(max = 5)
     private String phoneCode;
-
-    @Size(max = 20)
     private String phone;
-
-    @Size(max = 255)
     private String address;
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -57,5 +67,5 @@ public class updateUserRequest {
     public void setAddress(String address) {
         this.address = address;
     }
-}
 
+}

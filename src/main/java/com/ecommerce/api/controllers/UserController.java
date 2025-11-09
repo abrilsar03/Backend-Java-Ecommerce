@@ -1,7 +1,7 @@
 package com.ecommerce.api.controllers;
 
-import com.ecommerce.api.dto.ProfileResponse;
-import com.ecommerce.api.dto.updateUserRequest;
+import com.ecommerce.api.dto.users.UpdateUserRequest;
+import com.ecommerce.api.dto.users.ProfileResponse;
 import com.ecommerce.api.model.AuthUser;
 import com.ecommerce.api.services.UserService;
 import jakarta.validation.Valid;
@@ -30,7 +30,7 @@ public class UserController {
     @PatchMapping
     @RequestMapping("/current-user/profile")
     public ProfileResponse updateCurrentUserProfile(@AuthenticationPrincipal AuthUser auth,
-            @Valid @RequestBody updateUserRequest body) {
+            @Valid @RequestBody UpdateUserRequest body) {
         return userService.updateUser(auth.getId(), body);
     }
 

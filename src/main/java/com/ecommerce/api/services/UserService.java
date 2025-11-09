@@ -1,8 +1,8 @@
 // services/UserService.java
 package com.ecommerce.api.services;
 
-import com.ecommerce.api.dto.ProfileResponse;
-import com.ecommerce.api.dto.updateUserRequest;
+import com.ecommerce.api.dto.users.ProfileResponse;
+import com.ecommerce.api.dto.users.UpdateUserRequest;
 import com.ecommerce.api.entities.UserEntity;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.UserRepository;
@@ -28,7 +28,7 @@ public class UserService {
     }
 
     @Transactional
-    public ProfileResponse updateUser(UUID userId, updateUserRequest req) {
+    public ProfileResponse updateUser(UUID userId, UpdateUserRequest req) {
         UserEntity user =
                 userRepository.findById(userId).orElseThrow(() -> ExceptionFactory.userNotFound());
 

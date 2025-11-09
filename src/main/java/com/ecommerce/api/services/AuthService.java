@@ -1,9 +1,9 @@
 package com.ecommerce.api.services;
 
 
-import com.ecommerce.api.dto.AuthResponse;
-import com.ecommerce.api.dto.LoginUserRequest;
-import com.ecommerce.api.dto.RegisterUserRequest;
+import com.ecommerce.api.dto.auth.AuthResponse;
+import com.ecommerce.api.dto.auth.LoginUserRequest;
+import com.ecommerce.api.dto.auth.RegisterUserRequest;
 import com.ecommerce.api.entities.UserEntity;
 import com.ecommerce.api.enums.RoleCodeType;
 import com.ecommerce.api.exceptions.ExceptionFactory;

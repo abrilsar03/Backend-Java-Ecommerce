@@ -1,4 +1,4 @@
-package com.ecommerce.api.dto;
+package com.ecommerce.api.dto.systemParams;
 
 import jakarta.validation.constraints.NotBlank;
 

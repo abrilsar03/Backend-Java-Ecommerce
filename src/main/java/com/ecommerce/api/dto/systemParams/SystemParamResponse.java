@@ -1,4 +1,4 @@
-package com.ecommerce.api.dto;
+package com.ecommerce.api.dto.systemParams;
 
 import com.ecommerce.api.enums.SystemParamType;
 import java.time.OffsetDateTime;
