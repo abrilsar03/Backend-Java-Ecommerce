@@ -15,6 +15,10 @@ public class ApiKeyResponse extends BasicEntity {
     public ApiKeyResponse(UUID id, String name, String key, Boolean active,
             OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         super();
+        this.setId(id);
+        this.setActive(active);
+        this.setCreatedAt(createdAt);
+        this.setUpdatedAt(updatedAt);
         this.name = name;
         this.key = key;
     }
