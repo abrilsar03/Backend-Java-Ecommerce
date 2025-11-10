@@ -46,13 +46,14 @@ public class OrderService {
     @Transactional
     public OrderEntity placeOrder(UUID userId, String shippingAddress, String cardToken) {
 
-        var user = userRepository.findById(userId).orElseThrow();
+        var user = userRepository.findById(userId)
+                .orElseThrow(() -> ExceptionFactory.userNotFound());
 
         CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
-                .orElseThrow(() -> new RuntimeException("active_cart_not_found"));
+                .orElseThrow(() -> ExceptionFactory.cartNotFoundError());
 
         if (cart.getItems().isEmpty()) {
-            throw new RuntimeException("cart_without_items");
+            throw ExceptionFactory.cartWithoutItems();
         }
 
         var lines = cart
@@ -94,7 +95,8 @@ public class OrderService {
         payment.setOrder(order);
         payment.setPaymentType(PaymentType.CARD);
         payment.setStatus(PaymentStatusType.PENDING);
-        var token = cardTokens.findByToken(cardToken).orElseThrow();
+        var token = cardTokens.findByToken(cardToken)
+                .orElseThrow(() -> ExceptionFactory.tokenizationRejected());
         payment.setCardToken(token);
         payment.setAttempts(0);
         payments.save(payment);
@@ -109,6 +111,10 @@ public class OrderService {
             boolean accepted = rnd.nextDouble() >= pReject;
             payment.setAttempts(i);
             if (accepted) {
+                // Validate order is still in PENDING_PAYMENT before processing payment
+                if (order.getStatus() != OrderStatusType.PENDING_PAYMENT) {
+                    throw ExceptionFactory.orderInvalidStatusForPayment();
+                }
 
                 payment.setStatus(PaymentStatusType.SUCCESS);
                 payments.save(payment);
@@ -151,10 +157,11 @@ public class OrderService {
         int subtotal = 0;
         int tax = 0;
         for (var ln : lines) {
-            if (ln.qty() <= 0)
-                throw new RuntimeException("invalid_qty");
+            if (ln.qty() <= 0) {
+                throw ExceptionFactory.invalidQuantity();
+            }
             if (ln.product() == null || Boolean.FALSE.equals(ln.product().getActive())) {
-                throw new RuntimeException("product_inactive");
+                throw ExceptionFactory.productInactive();
             }
             subtotal += ln.priceCents() * ln.qty();
         }

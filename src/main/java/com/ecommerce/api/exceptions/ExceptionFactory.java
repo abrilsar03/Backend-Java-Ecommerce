@@ -71,4 +71,24 @@ public class ExceptionFactory {
     public static ApiException orderNotFound() {
         return new ApiException(ErrorCode.ORDER_NOT_FOUND);
     }
+
+    public static ApiException cartNotFoundError() {
+        return new ApiException(ErrorCode.CART_NOT_FOUND_ERROR);
+    }
+
+    public static ApiException cartWithoutItems() {
+        return new ApiException(ErrorCode.CART_WITHOUT_ITEMS);
+    }
+
+    public static ApiException invalidQuantity() {
+        return new ApiException(ErrorCode.INVALID_QUANTITY);
+    }
+
+    public static ApiException productInactive() {
+        return new ApiException(ErrorCode.PRODUCT_INACTIVE);
+    }
+
+    public static ApiException orderInvalidStatusForPayment() {
+        return new ApiException(ErrorCode.ORDER_INVALID_STATUS_FOR_PAYMENT);
+    }
 }

@@ -179,8 +179,7 @@ public class CartService {
 
     private void assertStockForTargetQuantity(ProductEntity product, int targetQty) {
         int minStock = systemParamsService.getAsInt(SystemParamType.min_stock_visibility, 15);
-        System.out.println("min stock que" + minStock);
-        if (targetQty > minStock) {
+        if (product.getStock() != null && targetQty > product.getStock()) {
             throw ExceptionFactory.insufficientStock();
         }
     }

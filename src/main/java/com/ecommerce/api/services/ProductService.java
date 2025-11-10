@@ -64,7 +64,9 @@ public class ProductService {
     }
 
     private Specification<ProductEntity> buildPublicSpecification(ProductQuery query) {
-        return Specification.where(ProductSpecifications.isActive()).and(buildCommonFilters(query));
+        int minStock = systemParamsService.getAsInt(SystemParamType.min_stock_visibility, 15);
+        return Specification.where(ProductSpecifications.isActive())
+                .and(ProductSpecifications.stockAtLeast(minStock)).and(buildCommonFilters(query));
     }
 
     private Specification<ProductEntity> buildAdminSpecification(ProductQuery query) {
@@ -178,8 +180,12 @@ public class ProductService {
     private void validateProductVisibility(ProductEntity product) {
         int minStock = systemParamsService.getAsInt(SystemParamType.min_stock_visibility, 15);
 
-        if (Boolean.FALSE.equals(product.getActive())
-                || (product.getStock() != null && product.getStock() < minStock)) {
+        if (Boolean.FALSE.equals(product.getActive())) {
+            throw ExceptionFactory.productNotFound();
+        }
+
+        // Validate stock visibility - product must have stock >= minStock or stock is null
+        if (product.getStock() != null && product.getStock() < minStock) {
             throw ExceptionFactory.productNotFound();
         }
     }

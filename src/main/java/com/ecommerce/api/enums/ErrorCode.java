@@ -52,7 +52,17 @@ public enum ErrorCode {
     TOKENIZATION_REJECTED("422", "It was not possible to tokenize the card"), API_KEY_NOT_FOUND(
             "404", "API key not found"),
 
-    DISABLE_PRODUCT("400", "The product is not available at the moment");
+    DISABLE_PRODUCT("400", "The product is not available at the moment"),
+
+    CART_NOT_FOUND_ERROR("404", "Active cart not found"),
+
+    CART_WITHOUT_ITEMS("400", "Cart is empty"),
+
+    INVALID_QUANTITY("400", "Invalid quantity"),
+
+    PRODUCT_INACTIVE("400", "Product is inactive"),
+
+    ORDER_INVALID_STATUS_FOR_PAYMENT("400", "Order cannot be paid in current status");
 
     private final String code;
     private final String defaultMessage;

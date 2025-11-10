@@ -33,4 +33,10 @@ public class ProductSpecifications {
     public static Specification<ProductEntity> isActive() {
         return (root, query, cb) -> cb.isTrue(root.get("active"));
     }
+
+    public static Specification<ProductEntity> stockAtLeast(Integer minStock) {
+        return (root, query, cb) -> minStock == null ? null
+                : cb.or(cb.isNull(root.get("stock")),
+                        cb.greaterThanOrEqualTo(root.get("stock"), minStock));
+    }
 }

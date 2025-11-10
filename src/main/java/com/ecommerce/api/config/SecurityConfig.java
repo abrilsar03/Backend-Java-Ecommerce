@@ -66,15 +66,15 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint())
                         .accessDeniedHandler(accessDeniedHandler()))
 
-                .authorizeHttpRequests(
-                        auth -> auth.requestMatchers("/health-check/**", "/auth/**").permitAll()
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/health-check/**", "/auth/**")
+                        .permitAll()
 
-                                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll()
 
-                                .requestMatchers("/tokenization/**")
-                                .hasAuthority(AuthorityType.API_CLIENT.name())
+                        .requestMatchers("/tokenization/**")
+                        .hasAuthority(AuthorityType.API_CLIENT.name())
 
-                                .anyRequest().authenticated())
+                        .anyRequest().authenticated())
 
 
                 .addFilterBefore(apiKeyAuth, UsernamePasswordAuthenticationFilter.class)
