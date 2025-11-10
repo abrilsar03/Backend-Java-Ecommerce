@@ -2,6 +2,14 @@
 
 API RESTful para un sistema de e-commerce desarrollada con Spring Boot, que incluye gestión de productos, carritos de compra, órdenes, pagos, autenticación y autorización basada en roles y permisos.
 
+## Postman collection: 
+https://www.postman.com/abrilsar03/workspace/my-workspace/collection/39717677-4fd1b35d-f4ca-41a3-a99d-5ff50e602a62?action=share&creator=39717677&active-environment=39717677-45fb816e-ea12-4a47-8088-a28b37d21228
+
+## Hosted
+- On render Api y Postgres
+
+## Heath Check: https://backend-java-ecommerce.onrender.com/api/v1/healt-check/ping
+
 ## 📋 Tabla de Contenidos
 
 - [Stack Tecnológico](#-stack-tecnológico)
