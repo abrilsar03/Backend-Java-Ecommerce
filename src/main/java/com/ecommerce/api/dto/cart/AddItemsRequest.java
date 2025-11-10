@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
+import org.checkerframework.checker.units.qual.A;
 
 @NoArgsConstructor
 public class AddItemsRequest {
@@ -24,6 +25,12 @@ public class AddItemsRequest {
     }
 
     public void setItems(List<Item> items) {
+        this.items = items;
+    }
+
+    public AddItemsRequest() {}
+
+    public AddItemsRequest(List<Item> items) {
         this.items = items;
     }
 

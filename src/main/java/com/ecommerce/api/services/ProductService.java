@@ -74,11 +74,6 @@ public class ProductService {
             product.setTitle(request.getTitle());
         }
 
-        if (request.getSku() != null) {
-            product.setSku(request.getSku());
-        }
-
-
         if (request.getDescription() != null) {
             product.setDescription(request.getDescription());
         }

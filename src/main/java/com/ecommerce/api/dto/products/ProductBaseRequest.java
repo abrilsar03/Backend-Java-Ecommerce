@@ -1,42 +1,42 @@
 package com.ecommerce.api.dto.products;
 
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
-import java.util.UUID;
-import lombok.NoArgsConstructor;
+import org.springframework.security.access.method.P;
 
-@NoArgsConstructor
-public class ProductResponse {
-    private UUID id;
-    private String title;
-    private String sku;
-    private String description;
-    private Integer priceCents;
-    private String photoUrl;
-    private BigDecimal tax;
-    private Boolean active;
-    private Integer stock;
+public abstract class ProductBaseRequest {
 
-    public ProductResponse() {}
+    @Size(min = 1, max = 255, message = "Title must be between 1 and 255 characters")
+    protected String title;
 
-    public ProductResponse(UUID id, String title, String sku, String description,
-            Integer priceCents, String photoUrl, BigDecimal tax, Boolean active, Integer stock) {
-        this.id = id;
+    @Size(max = 4000, message = "Description must be maximum 4000 characters")
+    protected String description;
+
+    @Min(value = 0, message = "Price must be greater than or equal to 0")
+    protected Integer priceCents;
+
+    @Size(max = 2000, message = "Photo URL must be maximum 2000 characters")
+    @org.hibernate.validator.constraints.URL(message = "Photo URL must be a valid URL")
+    protected String photoUrl;
+
+    @DecimalMin(value = "0", message = "Tax must be greater than or equal to 0")
+    protected BigDecimal tax;
+
+    @Min(value = 0, message = "Stock must be greater than or equal to 0")
+    protected Integer stock;
+
+    public ProductBaseRequest() {}
+
+    public ProductBaseRequest(String title, String description, Integer priceCents, String photoUrl,
+            BigDecimal tax, Integer stock) {
         this.title = title;
-        this.sku = sku;
         this.description = description;
         this.priceCents = priceCents;
         this.photoUrl = photoUrl;
         this.tax = tax;
-        this.active = active;
         this.stock = stock;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getTitle() {
@@ -45,14 +45,6 @@ public class ProductResponse {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getSku() {
-        return sku;
-    }
-
-    public void setSku(String sku) {
-        this.sku = sku;
     }
 
     public String getDescription() {
@@ -85,14 +77,6 @@ public class ProductResponse {
 
     public void setTax(BigDecimal tax) {
         this.tax = tax;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
     }
 
     public Integer getStock() {

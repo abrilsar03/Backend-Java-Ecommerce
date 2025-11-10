@@ -32,7 +32,6 @@ public class CartController {
         return carts.addItems(auth.getId(), body);
     }
 
-    // SET: fija cantidades absolutas (1..100)
     @PatchMapping("/edit-items")
     public CartResponse setQuantities(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody UpdateItemRequest body) {

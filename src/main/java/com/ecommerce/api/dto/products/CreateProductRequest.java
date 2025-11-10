@@ -1,44 +1,26 @@
 package com.ecommerce.api.dto.products;
 
-import jakarta.validation.constraints.*;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
-@NoArgsConstructor
-public class CreateProductRequest {
+public class CreateProductRequest extends ProductBaseRequest {
 
-    @NotBlank
-    @Size(max = 255)
-    private String title;
-
-    @NotBlank
-    @Size(min = 3, max = 255)
+    @NotBlank(message = "SKU is required")
+    @Size(min = 3, max = 255, message = "SKU must be between 3 and 255 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9-_]+$",
+            message = "SKU can only contain letters, numbers, hyphens and underscores")
     private String sku;
 
-    @Size(max = 4000)
-    private String description;
 
-    @NotNull
-    @Min(0)
-    private Integer priceCents;
+    public CreateProductRequest() {}
 
-    @Size(max = 2000)
-    private String photoUrl;
-
-    @NotNull
-    @DecimalMin("0")
-    private BigDecimal tax;
-
-    @Min(0)
-    private Integer stock;
-
-    // getters / setters
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
+    public CreateProductRequest(String title, String sku, String description, Integer priceCents,
+            String photoUrl, BigDecimal tax, Integer stock) {
+        super(title, description, priceCents, photoUrl, tax, stock);
+        this.sku = sku;
     }
 
     public String getSku() {
@@ -49,43 +31,28 @@ public class CreateProductRequest {
         this.sku = sku;
     }
 
-    public String getDescription() {
-        return description;
+    @NotBlank(message = "Title is required")
+    @Override
+    public String getTitle() {
+        return super.getTitle();
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
+    @NotNull(message = "Price is required")
+    @Override
     public Integer getPriceCents() {
-        return priceCents;
+        return super.getPriceCents();
     }
 
-    public void setPriceCents(Integer priceCents) {
-        this.priceCents = priceCents;
-    }
-
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-
+    @NotNull(message = "Tax is required")
+    @Override
     public BigDecimal getTax() {
-        return tax;
+        return super.getTax();
     }
 
-    public void setTax(BigDecimal tax) {
-        this.tax = tax;
-    }
-
+    @NotNull(message = "Stock is required")
+    @Override
     public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
+        return super.getStock();
     }
 }

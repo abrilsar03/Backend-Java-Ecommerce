@@ -26,10 +26,16 @@ public class CartService {
     }
 
     public CartResponse findActive(UUID userId) {
-        CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
-                .orElseGet(() -> createActiveCart(userId));
+        try {
+            CartEntity cart =
+                    cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                            .orElseGet(() -> createActiveCart(userId));
 
-        return parseResponse(cart);
+            return parseResponse(cart);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     @Transactional

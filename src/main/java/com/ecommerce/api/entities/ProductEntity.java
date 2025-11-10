@@ -46,6 +46,20 @@ public class ProductEntity extends BasicEntity {
     @Column(name = "stock")
     private Integer stock;
 
+    public ProductEntity() {}
+
+    public ProductEntity(String title, String sku, String description, Integer priceCents,
+            String photoUrl, BigDecimal tax, Integer stock) {
+        super();
+        this.title = title;
+        this.sku = sku;
+        this.description = description;
+        this.priceCents = priceCents;
+        this.photoUrl = photoUrl;
+        this.tax = tax;
+        this.stock = stock;
+    }
+
     public String getTitle() {
         return title;
     }

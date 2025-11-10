@@ -10,6 +10,8 @@ import com.ecommerce.api.services.ProductService;
 import com.ecommerce.api.services.SearchLogService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,7 +33,7 @@ public class ProductsController {
     public PaginatedResponse<ProductResponse> list(@RequestParam(required = false) String q,
             @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal AuthUser auth, HttpServletRequest req) {
-
+        System.out.println("HOLLAA" + auth);
         UUID userId = auth != null ? auth.getId() : null;
 
         String query = "q=" + (q == null ? "" : q) + "&page=" + page + "&size=" + size;
@@ -56,8 +58,9 @@ public class ProductsController {
         return products.searchAdmin(q, page, size);
     }
 
-    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') || hasAuthority('PRODUCT:READ')")
+    @GetMapping("/{id}")
+    @Transactional(readOnly = true)
     public ProductResponse findOneAdmin(@PathVariable UUID id) {
         return products.findOneAdmin(id);
     }
