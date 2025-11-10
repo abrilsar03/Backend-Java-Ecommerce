@@ -49,7 +49,8 @@ public enum ErrorCode {
 
     INSUFFICIENT_STOCK("422", "Insufficient stock available"),
 
-    TOKENIZATION_REJECTED("422", "It was not possible to tokenize the card"),
+    TOKENIZATION_REJECTED("422", "It was not possible to tokenize the card"), API_KEY_NOT_FOUND(
+            "404", "API key not found"),
 
     DISABLE_PRODUCT("400", "The product is not available at the moment");
 

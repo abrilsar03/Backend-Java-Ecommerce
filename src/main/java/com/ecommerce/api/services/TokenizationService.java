@@ -2,7 +2,6 @@ package com.ecommerce.api.services;
 
 import com.ecommerce.api.dto.tokenization.TokenizeCardRequest;
 import com.ecommerce.api.dto.tokenization.TokenizeCardResponse;
-import org.springframework.beans.factory.annotation.Value;
 import com.ecommerce.api.entities.*;
 import com.ecommerce.api.enums.EventType;
 import com.ecommerce.api.enums.SystemParamType;
@@ -11,7 +10,10 @@ import com.ecommerce.api.enums.TokenizationStatusType;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.*;
 import com.ecommerce.api.utils.CardUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.Map;
@@ -24,20 +26,21 @@ public class TokenizationService {
     private final EventLogService eventLog;
     private final SystemParamService params;
 
-    @Value("${app.tokenization.fingerprint-secret}")
     private final String fingerprintSecret;
 
     private final SecureRandom rnd = new SecureRandom();
 
     public TokenizationService(CardTokenRepository tokens, TokenizationRequestRepository requests,
-            EventLogService eventLog, SystemParamService params) {
+            EventLogService eventLog, SystemParamService params,
+            @Value("${app.tokenization.fingerprint-secret}") String fingerprintSecret) {
         this.tokens = tokens;
         this.requests = requests;
         this.eventLog = eventLog;
         this.params = params;
-        this.fingerprintSecret = "";
+        this.fingerprintSecret = fingerprintSecret;
     }
 
+    @Transactional
     public TokenizeCardResponse tokenize(ApiKeyEntity apiKey, TokenizeCardRequest req) {
 
         String pan = req.getPan().replaceAll("\\s+", "");
@@ -48,6 +51,10 @@ public class TokenizationService {
 
         if (req.getCvv() == null || !req.getCvv().matches("\\d{3,4}")) {
             reject(apiKey, null, "INVALID_CVV");
+        }
+
+        if (!StringUtils.hasText(fingerprintSecret)) {
+            reject(apiKey, null, "FINGERPRINT_SECRET_MISSING");
         }
 
         String fingerprint = CardUtils.hmacSha256Hex(fingerprintSecret,
@@ -73,7 +80,7 @@ public class TokenizationService {
         eventLog.info(EventType.TOKEN_CREATED, EntityType.CARD_TOKEN, savedCard.getId(),
                 Map.of("fingerprint", fingerprint.substring(0, 16) + "..."));
 
-        return parserResponse(savedCard);
+        return toResponse(savedCard);
     }
 
     private CardTokenEntity createNewToken(String fingerprint, String pan,
@@ -83,7 +90,7 @@ public class TokenizationService {
         Short expMonth = request.getExpMonth().shortValue();
         Short expYear = request.getExpYear().shortValue();
 
-        var cardToken = new CardTokenEntity(generatePublicToken(), fingerprint, detectBrand(pan),
+        var cardToken = new CardTokenEntity(generateUniqueToken(), fingerprint, detectBrand(pan),
                 last4, expMonth, expYear);
 
         return tokens.save(cardToken);
@@ -111,17 +118,20 @@ public class TokenizationService {
         return "UNKNOWN";
     }
 
-    private String generatePublicToken() {
-        return "tok_" + Math.abs(rnd.nextLong());
+    private String generateUniqueToken() {
+        String token;
+        do {
+            token = "tok_" + Long.toUnsignedString(rnd.nextLong(), 36)
+                    + Long.toUnsignedString(rnd.nextLong(), 36);
+        } while (tokens.findByToken(token).isPresent());
+        return token;
     }
 
-    public TokenizeCardResponse parserResponse(CardTokenEntity cardTokenEntity) {
+    public TokenizeCardResponse toResponse(CardTokenEntity cardTokenEntity) {
         Integer expMonth = Integer.valueOf(cardTokenEntity.getExpMonth());
-        Integer expYear = Integer.valueOf(cardTokenEntity.getExpMonth());
+        Integer expYear = Integer.valueOf(cardTokenEntity.getExpYear());
 
-        var response = new TokenizeCardResponse(cardTokenEntity.getToken(),
-                cardTokenEntity.getBrand(), cardTokenEntity.getLast4(), expMonth, expYear);
-
-        return response;
+        return new TokenizeCardResponse(cardTokenEntity.getToken(), cardTokenEntity.getBrand(),
+                cardTokenEntity.getLast4(), expMonth, expYear);
     }
 }

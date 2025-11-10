@@ -21,6 +21,7 @@ public class TokenizationRequestEntity extends BasicEntity {
     @Column
     private String fingerprint;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TokenizationStatusType status;
 

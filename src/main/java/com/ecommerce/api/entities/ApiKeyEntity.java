@@ -2,7 +2,6 @@ package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import java.time.OffsetDateTime;
 
 @Entity
 @NoArgsConstructor

@@ -63,4 +63,8 @@ public class ExceptionFactory {
     public static ApiException tokenizationRejected() {
         return new ApiException(ErrorCode.TOKENIZATION_REJECTED);
     }
+
+    public static ApiException apiKeyNotFound() {
+        return new ApiException(ErrorCode.API_KEY_NOT_FOUND);
+    }
 }

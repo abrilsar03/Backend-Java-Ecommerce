@@ -20,7 +20,7 @@ public class SpecificationUtils {
         }
         return result;
     }
-`
+
     @SafeVarargs
     public static <E> Specification<E> combineOr(Specification<E>... specs) {
         Specification<E> result = Specification.where(null);

@@ -5,18 +5,12 @@ import com.ecommerce.api.dto.products.CreateProductRequest;
 import com.ecommerce.api.dto.products.ProductQuery;
 import com.ecommerce.api.dto.products.ProductResponse;
 import com.ecommerce.api.dto.products.UpdateProductRequest;
-import com.ecommerce.api.model.AuthUser;
 import com.ecommerce.api.services.ProductService;
 import com.ecommerce.api.services.SearchLogService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -46,11 +40,8 @@ public class ProductsController {
 
     @PreAuthorize("hasRole('ADMIN') && hasAuthority('PRODUCT:READ')")
     @GetMapping("/paginate")
-    public PaginatedResponse<ProductResponse> listAdmin(
-            @RequestParam(name = "q", required = false) String q,
-            @RequestParam(name = "page", defaultValue = "0") int page,
-            @RequestParam(name = "size", defaultValue = "10") int size) {
-        return productService.searchAdmin(q, page, size);
+    public PaginatedResponse<ProductResponse> searchAdminProducts(ProductQuery query) {
+        return productService.searchAdmin(query);
     }
 
     @PreAuthorize("hasRole('ADMIN') && hasAuthority('PRODUCT:READ')")

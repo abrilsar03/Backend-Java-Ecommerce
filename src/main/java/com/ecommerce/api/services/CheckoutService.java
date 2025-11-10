@@ -1,4 +1,3 @@
-// services/CheckoutService.java
 package com.ecommerce.api.services;
 
 import com.ecommerce.api.entities.*;
@@ -45,6 +44,10 @@ public class CheckoutService {
 
         CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
                 .orElseThrow(() -> new RuntimeException("active_cart_not_found"));
+
+        if (cart.getItems().isEmpty()) {
+            throw new RuntimeException("cart_without_items");
+        }
 
         var lines = cart
                 .getItems().stream().map(i -> new Line(i.getProduct(),
@@ -98,14 +101,17 @@ public class CheckoutService {
         boolean success = false;
         for (int i = 1; i <= maxRetries; i++) {
             boolean accepted = rnd.nextDouble() >= pReject;
+            payment.setAttempts(i);
             if (accepted) {
 
                 payment.setStatus(PaymentStatusType.SUCCESS);
-                payment.setAttempts(i);
                 payments.save(payment);
 
                 order.setStatus(OrderStatusType.PAID);
                 orders.save(order);
+
+                cart.setStatus(CartStatusType.CLOSED);
+                cartRepository.save(cart);
 
                 eventLog.info(EventType.PAYMENT_CONFIRMED, EntityType.PAYMENT, payment.getId(),
                         Map.of("attempt", i));
@@ -115,6 +121,7 @@ public class CheckoutService {
             } else {
                 eventLog.warn(EventType.PAYMENT_ATTEMPT_FAILED, EntityType.PAYMENT, payment.getId(),
                         Map.of("attempt", i));
+                payments.save(payment);
             }
         }
 
@@ -154,18 +161,5 @@ public class CheckoutService {
     public record Totals(int subtotalCents, int taxCents, int totalCents) {
     }
 
-    private static int clamp(int v, int min, int max) {
-        return Math.max(min, Math.min(max, v));
-    }
-
-    private static double clamp01(double v) {
-        if (Double.isNaN(v))
-            return 0.0;
-        if (v < 0)
-            return 0.0;
-        if (v > 1)
-            return 1.0;
-        return v;
-    }
 
 }

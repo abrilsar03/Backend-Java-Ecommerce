@@ -8,4 +8,6 @@ import java.util.UUID;
 
 public interface ApiKeyRepository extends JpaRepository<ApiKeyEntity, UUID> {
     Optional<ApiKeyEntity> findByKeyAndActiveTrue(String key);
+
+    Optional<ApiKeyEntity> findByNameAndActiveTrue(String name);
 }
