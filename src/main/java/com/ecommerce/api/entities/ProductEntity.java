@@ -13,12 +13,12 @@ public class ProductEntity extends BasicEntity {
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "title", nullable = false, length = 255)
+    @Column(name = "title", nullable = false, columnDefinition = "TEXT")
     private String title;
 
     @NotBlank
     @Size(min = 3, max = 255)
-    @Column(name = "sku", nullable = false, unique = true, length = 255)
+    @Column(name = "sku", nullable = false, unique = true, columnDefinition = "TEXT")
     private String sku;
 
     @Size(max = 4000)

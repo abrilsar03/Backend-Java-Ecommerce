@@ -14,11 +14,11 @@ public interface SystemParamRepository extends JpaRepository<SystemParamEntity, 
 
     Optional<SystemParamEntity> findByKey(SystemParamType key);
 
-    @Query("""
-              select param from SystemParamEntity param
-              where (:query is null
-                     or lower(cast(param.key as string)) like lower(concat('%', :query, '%'))
-                     or lower(param.value) like lower(concat('%', :query, '%')))
-            """)
+    @Query(value = """
+              SELECT * FROM system_params
+              WHERE (:query IS NULL
+                     OR LOWER(CAST(key AS TEXT)) LIKE LOWER(CONCAT('%', :query, '%'))
+                     OR LOWER(CAST(value AS TEXT)) LIKE LOWER(CONCAT('%', :query, '%')))
+            """, nativeQuery = true)
     Page<SystemParamEntity> search(@Param("query") String query, Pageable pageable);
 }

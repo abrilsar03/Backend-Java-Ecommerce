@@ -2,6 +2,8 @@ package com.ecommerce.api.utils;
 
 import org.springframework.data.jpa.domain.Specification;
 import com.ecommerce.api.entities.ProductEntity;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Expression;
 
 public class ProductSpecifications {
 

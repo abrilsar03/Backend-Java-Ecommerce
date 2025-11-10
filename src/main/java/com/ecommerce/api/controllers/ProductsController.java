@@ -14,6 +14,8 @@ import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.ecommerce.api.enums.EntityType;
+import com.ecommerce.api.enums.EventType;
 
 import java.util.UUID;
 
@@ -71,17 +73,17 @@ public class ProductsController {
     public PaginatedResponse<ProductResponse> searchPublicProducts(
             @AuthenticationPrincipal AuthUser auth, ProductQuery query,
             HttpServletRequest request) {
-        // Log search asynchronously
+
         String queryString = buildQueryString(query);
         String ip = getClientIp(request);
         String userAgent = request.getHeader("User-Agent");
         searchLog.logAsync(auth.getId(), "/products/current-user/paginate", queryString, ip,
                 userAgent);
 
-        // Log event
-        eventLog.info(com.ecommerce.api.enums.EventType.PRODUCT_SEARCH,
-                com.ecommerce.api.enums.EntityType.PRODUCT, null, java.util.Map.of("userId",
-                        auth.getId().toString(), "query", queryString != null ? queryString : ""));
+
+        eventLog.info(EventType.PRODUCT_SEARCH, com.ecommerce.api.enums.EntityType.PRODUCT, null,
+                java.util.Map.of("userId", auth.getId().toString(), "query",
+                        queryString != null ? queryString : ""));
 
         return productService.searchPublic(query);
     }
@@ -114,14 +116,12 @@ public class ProductsController {
     }
 
     @PreAuthorize("hasRole('ADMIN') && hasAuthority('PRODUCT:CREATE')")
-    @PostMapping("/")
+    @PostMapping("/create")
     public ProductResponse create(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody CreateProductRequest body) {
         ProductResponse response = productService.create(body);
 
-        // Log product creation
-        eventLog.info(com.ecommerce.api.enums.EventType.PRODUCT_CREATED,
-                com.ecommerce.api.enums.EntityType.PRODUCT, response.getId(),
+        eventLog.info(EventType.PRODUCT_CREATED, EntityType.PRODUCT, response.getId(),
                 java.util.Map.of("sku", body.getSku(), "title", body.getTitle()));
 
         return response;
@@ -133,10 +133,8 @@ public class ProductsController {
             @PathVariable("id") UUID id, @Valid @RequestBody UpdateProductRequest body) {
         ProductResponse response = productService.update(id, body);
 
-        // Log product update
-        eventLog.info(com.ecommerce.api.enums.EventType.PRODUCT_UPDATED,
-                com.ecommerce.api.enums.EntityType.PRODUCT, id, java.util.Map.of("active",
-                        body.getActive() != null ? body.getActive().toString() : "unchanged"));
+        eventLog.info(EventType.PRODUCT_UPDATED, EntityType.PRODUCT, id, java.util.Map.of("active",
+                body.getActive() != null ? body.getActive().toString() : "unchanged"));
 
         return response;
     }
