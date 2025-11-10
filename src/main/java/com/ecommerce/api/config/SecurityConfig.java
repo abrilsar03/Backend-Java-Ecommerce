@@ -1,6 +1,9 @@
 package com.ecommerce.api.config;
 
+import com.ecommerce.api.enums.AuthorityType;
 import com.ecommerce.api.filters.JwtAuthFilter;
+import com.ecommerce.api.repositories.ApiKeyRepository;
+import com.ecommerce.api.security.ApiKeyAuth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -34,6 +37,16 @@ public class SecurityConfig {
 
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+        return http.build();
+    }
+
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http, ApiKeyRepository apiKeyRepo)
+            throws Exception {
+        http.addFilterBefore(new ApiKeyAuth(apiKeyRepo), UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/tokenization/**")
+                        .hasAuthority(AuthorityType.API_CLIENT.name()).requestMatchers("/health/**")
+                        .permitAll().anyRequest().authenticated());
         return http.build();
     }
 
