@@ -22,6 +22,12 @@ public abstract class BasicEntity {
     @Column(nullable = false)
     private Boolean active = true;
 
+    public BasicEntity() {
+        this.id = UUID.randomUUID();
+        this.createdAt = OffsetDateTime.now();
+        this.updatedAt = OffsetDateTime.now();
+    }
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now();

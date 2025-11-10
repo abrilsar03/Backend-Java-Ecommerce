@@ -1,5 +1,5 @@
 package com.ecommerce.api.enums;
 
 public enum PermissionActionType {
-    READ, WRITE, DELETE, LIST
+    CREATE, READ, UPDATE, DELETE
 }

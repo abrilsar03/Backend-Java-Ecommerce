@@ -11,7 +11,6 @@ import com.ecommerce.api.enums.RoleCodeType;
 public class RoleEntity extends BasicEntity {
 
     @Column(nullable = false, unique = true)
-
     @Enumerated(EnumType.STRING)
     private RoleCodeType role;
 
