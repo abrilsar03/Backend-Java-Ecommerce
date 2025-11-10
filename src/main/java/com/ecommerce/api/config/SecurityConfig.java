@@ -2,7 +2,6 @@ package com.ecommerce.api.config;
 
 import com.ecommerce.api.enums.AuthorityType;
 import com.ecommerce.api.filters.JwtAuthFilter;
-import com.ecommerce.api.repositories.ApiKeyRepository;
 import com.ecommerce.api.security.ApiKeyAuth;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -28,12 +27,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
-    private final ApiKeyRepository apiKeyRepository;
+    private final ApiKeyAuth apiKeyAuth;
 
-    public SecurityConfig(JwtAuthFilter jwtAuthFilter, ApiKeyRepository apiKeyRepository) {
+    public SecurityConfig(JwtAuthFilter jwtAuthFilter, ApiKeyAuth apiKeyAuth) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.apiKeyRepository = apiKeyRepository;
-
+        this.apiKeyAuth = apiKeyAuth;
     }
 
     @Bean
@@ -79,8 +77,7 @@ public class SecurityConfig {
                                 .anyRequest().authenticated())
 
 
-                .addFilterBefore(new ApiKeyAuth(apiKeyRepository),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(apiKeyAuth, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

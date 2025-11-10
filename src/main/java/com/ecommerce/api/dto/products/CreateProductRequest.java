@@ -17,9 +17,9 @@ public class CreateProductRequest extends ProductBaseRequest {
 
     public CreateProductRequest() {}
 
-    public CreateProductRequest(String title, String sku, String description, Integer priceCents,
+    public CreateProductRequest(String title, String sku, String description, BigDecimal price,
             String photoUrl, BigDecimal tax, Integer stock) {
-        super(title, description, priceCents, photoUrl, tax, stock);
+        super(title, description, price, photoUrl, tax, stock);
         this.sku = sku;
     }
 
@@ -35,19 +35,6 @@ public class CreateProductRequest extends ProductBaseRequest {
     @Override
     public String getTitle() {
         return super.getTitle();
-    }
-
-
-    @NotNull(message = "Price is required")
-    @Override
-    public Integer getPriceCents() {
-        return super.getPriceCents();
-    }
-
-    @NotNull(message = "Tax is required")
-    @Override
-    public BigDecimal getTax() {
-        return super.getTax();
     }
 
     @NotNull(message = "Stock is required")

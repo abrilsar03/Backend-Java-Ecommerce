@@ -2,9 +2,10 @@ package com.ecommerce.api.dto.products;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
-import org.springframework.security.access.method.P;
+import java.math.RoundingMode;
 
 public abstract class ProductBaseRequest {
 
@@ -14,13 +15,15 @@ public abstract class ProductBaseRequest {
     @Size(max = 4000, message = "Description must be maximum 4000 characters")
     protected String description;
 
-    @Min(value = 0, message = "Price must be greater than or equal to 0")
-    protected Integer priceCents;
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0", message = "Price must be greater than or equal to 0")
+    protected BigDecimal price;
 
     @Size(max = 2000, message = "Photo URL must be maximum 2000 characters")
     @org.hibernate.validator.constraints.URL(message = "Photo URL must be a valid URL")
     protected String photoUrl;
 
+    @NotNull(message = "Tax is required")
     @DecimalMin(value = "0", message = "Tax must be greater than or equal to 0")
     protected BigDecimal tax;
 
@@ -29,11 +32,11 @@ public abstract class ProductBaseRequest {
 
     public ProductBaseRequest() {}
 
-    public ProductBaseRequest(String title, String description, Integer priceCents, String photoUrl,
+    public ProductBaseRequest(String title, String description, BigDecimal price, String photoUrl,
             BigDecimal tax, Integer stock) {
         this.title = title;
         this.description = description;
-        this.priceCents = priceCents;
+        this.price = price;
         this.photoUrl = photoUrl;
         this.tax = tax;
         this.stock = stock;
@@ -55,12 +58,22 @@ public abstract class ProductBaseRequest {
         this.description = description;
     }
 
-    public Integer getPriceCents() {
-        return priceCents;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPriceCents(Integer priceCents) {
-        this.priceCents = priceCents;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    /**
+     * Convierte el precio (BigDecimal) a cents (Integer) multiplicando por 100
+     */
+    public Integer getPriceCents() {
+        if (price == null) {
+            return null;
+        }
+        return price.multiply(new BigDecimal("100")).setScale(0, RoundingMode.HALF_UP).intValue();
     }
 
     public String getPhotoUrl() {

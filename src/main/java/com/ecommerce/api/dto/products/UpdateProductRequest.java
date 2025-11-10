@@ -9,9 +9,9 @@ public class UpdateProductRequest extends ProductBaseRequest {
 
     private Boolean active = true;
 
-    public UpdateProductRequest(String title, String description, Integer priceCents,
+    public UpdateProductRequest(String title, String description, BigDecimal price,
             String photoUrl, BigDecimal tax, Integer stock, Boolean active) {
-        super(title, description, priceCents, photoUrl, tax, stock);
+        super(title, description, price, photoUrl, tax, stock);
         this.active = active;
     }
 

@@ -1,8 +1,14 @@
 package com.ecommerce.api.services;
 
+import com.ecommerce.api.dto.orders.*;
 import com.ecommerce.api.entities.*;
 import com.ecommerce.api.enums.*;
+import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +17,7 @@ import java.util.stream.Collectors;
 import java.security.SecureRandom;
 
 @Service
-public class CheckoutService {
+public class OrderService {
 
     private final OrderRepository orders;
     private final UserRepository userRepository;
@@ -24,7 +30,7 @@ public class CheckoutService {
 
     private final SecureRandom rnd = new SecureRandom();
 
-    public CheckoutService(OrderRepository orders, PaymentRepository payments,
+    public OrderService(OrderRepository orders, PaymentRepository payments,
             CardTokenRepository cardTokens, SystemParamService params, EventLogService eventLog,
             MailService mailer, UserRepository userRepository, CartRepository cartRepository) {
         this.orders = orders;
@@ -153,6 +159,82 @@ public class CheckoutService {
             subtotal += ln.priceCents() * ln.qty();
         }
         return new Totals(subtotal, tax, subtotal + tax);
+    }
+
+    @Transactional(readOnly = true)
+    public OrderResponse findById(UUID orderId) {
+        OrderEntity order = orders.findByIdWithItemsAndUser(orderId)
+                .orElseThrow(ExceptionFactory::orderNotFound);
+
+        PaymentResponse paymentResponse = payments.findByOrderIdWithCardToken(orderId)
+                .map(this::toPaymentResponse).orElse(null);
+
+        return toOrderResponse(order, paymentResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderResponse> findAll(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Page<OrderEntity> ordersPage = orders.findAll(pageable);
+
+        return ordersPage.map(order -> {
+            // Forzar carga de relaciones lazy
+            order.getItems().size();
+            order.getUser().getEmail();
+
+            PaymentResponse paymentResponse = payments.findByOrderIdWithCardToken(order.getId())
+                    .map(this::toPaymentResponse).orElse(null);
+            return toOrderResponse(order, paymentResponse);
+        });
+    }
+
+    private OrderResponse toOrderResponse(OrderEntity order, PaymentResponse payment) {
+        List<OrderItemResponse> items = order.getItems().stream().map(this::toOrderItemResponse)
+                .collect(Collectors.toList());
+
+        OrderResponse response = new OrderResponse();
+        response.setId(order.getId());
+        response.setUserId(order.getUser().getId());
+        response.setUserEmail(order.getUser().getEmail());
+        response.setStatus(order.getStatus().name());
+        response.setShippingAddress(order.getShippingAddress());
+        response.setSubtotalFromCents(order.getSubtotalCents());
+        response.setTaxFromCents(order.getTaxCents());
+        response.setTotalFromCents(order.getTotalCents());
+        response.setItems(items);
+        response.setPayment(payment);
+        response.setCreatedAt(order.getCreatedAt());
+        response.setUpdatedAt(order.getUpdatedAt());
+
+        return response;
+    }
+
+    private OrderItemResponse toOrderItemResponse(OrderItemEntity item) {
+        OrderItemResponse response = new OrderItemResponse();
+        response.setId(item.getId());
+        response.setProductId(item.getProduct().getId());
+        response.setNameSnapshot(item.getNameSnapshot());
+        response.setSkuSnapshot(item.getSkuSnapshot());
+        response.setPriceFromCents(item.getPriceCents());
+        response.setTaxPercent(item.getTaxPercent());
+        response.setQuantity(item.getQty());
+        response.setLineTotalFromCents(item.getLineTotalCents());
+
+        return response;
+    }
+
+    private PaymentResponse toPaymentResponse(PaymentEntity payment) {
+        CardTokenInfoResponse cardTokenInfo = null;
+        if (payment.getCardToken() != null) {
+            var cardToken = payment.getCardToken();
+            cardTokenInfo = new CardTokenInfoResponse(cardToken.getBrand(), cardToken.getLast4(),
+                    Integer.valueOf(cardToken.getExpMonth()),
+                    Integer.valueOf(cardToken.getExpYear()));
+        }
+
+        return new PaymentResponse(payment.getId(), payment.getStatus().name(),
+                payment.getPaymentType().name(), payment.getAttempts(), payment.getReference(),
+                cardTokenInfo);
     }
 
     public record Line(ProductEntity product, int priceCents, int qty,

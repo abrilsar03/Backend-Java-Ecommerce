@@ -128,7 +128,7 @@ public class ProductService {
         if (request.getDescription() != null) {
             product.setDescription(request.getDescription());
         }
-        if (request.getPriceCents() != null) {
+        if (request.getPrice() != null) {
             product.setPriceCents(request.getPriceCents());
         }
         if (request.getPhotoUrl() != null) {
@@ -154,7 +154,7 @@ public class ProductService {
         productResponse.setTitle(product.getTitle());
         productResponse.setSku(product.getSku());
         productResponse.setDescription(product.getDescription());
-        productResponse.setPriceCents(product.getPriceCents());
+        productResponse.setPriceFromCents(product.getPriceCents());
         productResponse.setPhotoUrl(product.getPhotoUrl());
         productResponse.setTax(product.getTax());
         productResponse.setActive(product.getActive());

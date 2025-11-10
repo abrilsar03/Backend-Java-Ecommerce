@@ -33,6 +33,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res,
             FilterChain chain) throws ServletException, IOException {
 
+        // Si ya hay una autenticación establecida (por ejemplo, por API key), no sobrescribirla
+        if (SecurityContextHolder.getContext().getAuthentication() != null
+                && SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
+            chain.doFilter(req, res);
+            return;
+        }
+
         String header = req.getHeader("Authorization");
 
         if (StringUtils.hasText(header) && header.startsWith("Bearer ")) {

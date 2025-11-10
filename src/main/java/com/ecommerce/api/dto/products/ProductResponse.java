@@ -1,6 +1,7 @@
 package com.ecommerce.api.dto.products;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +11,7 @@ public class ProductResponse {
     private String title;
     private String sku;
     private String description;
-    private Integer priceCents;
+    private BigDecimal price;
     private String photoUrl;
     private BigDecimal tax;
     private Boolean active;
@@ -18,12 +19,12 @@ public class ProductResponse {
 
 
     public ProductResponse(UUID id, String title, String sku, String description,
-            Integer priceCents, String photoUrl, BigDecimal tax, Boolean active, Integer stock) {
+            BigDecimal price, String photoUrl, BigDecimal tax, Boolean active, Integer stock) {
         this.id = id;
         this.title = title;
         this.sku = sku;
         this.description = description;
-        this.priceCents = priceCents;
+        this.price = price;
         this.photoUrl = photoUrl;
         this.tax = tax;
         this.active = active;
@@ -62,12 +63,23 @@ public class ProductResponse {
         this.description = description;
     }
 
-    public Integer getPriceCents() {
-        return priceCents;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPriceCents(Integer priceCents) {
-        this.priceCents = priceCents;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    /**
+     * Convierte el precio de cents (Integer) a BigDecimal dividiendo por 100
+     */
+    public void setPriceFromCents(Integer priceCents) {
+        if (priceCents == null) {
+            this.price = null;
+        } else {
+            this.price = new BigDecimal(priceCents).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        }
     }
 
     public String getPhotoUrl() {

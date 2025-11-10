@@ -8,6 +8,8 @@ import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -159,7 +161,7 @@ public class CartService {
 
             response.setQuantity(cartItem.getQuantity());
 
-            response.setPriceCents(product.getPriceCents());
+            response.setPriceFromCents(product.getPriceCents());
 
             return response;
         }).toList();
@@ -199,6 +201,55 @@ public class CartService {
         cartItem.setProduct(product);
         cartItem.setQuantity(desired);
         return cartItem;
+    }
+
+    @Transactional(readOnly = true)
+    public CartTotalsResponse calculateTotals(UUID userId) {
+        CartEntity cart = cartRepository.findByUserAndStatusWithItems(userId, CartStatusType.ACTIVE)
+                .orElseThrow(() -> ExceptionFactory.cartNotFound());
+
+        if (cart.getItems().isEmpty()) {
+            return new CartTotalsResponse(BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
+                    BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP),
+                    BigDecimal.ZERO.setScale(2, RoundingMode.HALF_UP));
+        }
+
+        int subtotalCents = 0;
+        int taxCents = 0;
+
+        for (var item : cart.getItems()) {
+            var product = item.getProduct();
+
+            if (product == null || Boolean.FALSE.equals(product.getActive())) {
+                continue;
+            }
+
+            if (item.getQuantity() <= 0) {
+                continue;
+            }
+
+            int itemTotalCents = product.getPriceCents() * item.getQuantity();
+            subtotalCents += itemTotalCents;
+
+            if (product.getTax() != null && product.getTax().compareTo(BigDecimal.ZERO) > 0) {
+                BigDecimal taxDecimal =
+                        product.getTax().divide(new BigDecimal("100"), 4, RoundingMode.HALF_UP);
+                BigDecimal itemTotal = new BigDecimal(itemTotalCents);
+                BigDecimal itemTax = itemTotal.multiply(taxDecimal);
+                taxCents += itemTax.setScale(0, RoundingMode.HALF_UP).intValue();
+            }
+        }
+
+        int totalCents = subtotalCents + taxCents;
+
+        BigDecimal subtotal = new BigDecimal(subtotalCents).divide(new BigDecimal("100"), 2,
+                RoundingMode.HALF_UP);
+        BigDecimal tax =
+                new BigDecimal(taxCents).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        BigDecimal total =
+                new BigDecimal(totalCents).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+
+        return new CartTotalsResponse(subtotal, tax, total);
     }
 
 }

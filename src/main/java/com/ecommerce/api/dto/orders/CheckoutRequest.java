@@ -1,4 +1,4 @@
-package com.ecommerce.api.dto.checkout;
+package com.ecommerce.api.dto.orders;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;

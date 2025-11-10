@@ -42,4 +42,9 @@ public class CartController {
             @Valid @RequestBody RemoveItemsRequest body) {
         return carts.removeItems(auth.getId(), body);
     }
+
+    @GetMapping("/totals")
+    public CartTotalsResponse getTotals(@AuthenticationPrincipal AuthUser auth) {
+        return carts.calculateTotals(auth.getId());
+    }
 }

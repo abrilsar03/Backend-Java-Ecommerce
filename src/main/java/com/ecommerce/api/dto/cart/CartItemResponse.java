@@ -1,5 +1,7 @@
 package com.ecommerce.api.dto.cart;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.UUID;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +10,7 @@ public class CartItemResponse {
     private UUID productId;
     private String title;
     private String sku;
-    private Integer priceCents;
+    private BigDecimal price;
     private Integer quantity;
 
     public UUID getProductId() {
@@ -35,12 +37,23 @@ public class CartItemResponse {
         this.sku = sku;
     }
 
-    public Integer getPriceCents() {
-        return priceCents;
+    public BigDecimal getPrice() {
+        return price;
     }
 
-    public void setPriceCents(Integer priceCents) {
-        this.priceCents = priceCents;
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    /**
+     * Convierte el precio de cents (Integer) a BigDecimal dividiendo por 100
+     */
+    public void setPriceFromCents(Integer priceCents) {
+        if (priceCents == null) {
+            this.price = null;
+        } else {
+            this.price = new BigDecimal(priceCents).divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+        }
     }
 
     public Integer getQuantity() {

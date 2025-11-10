@@ -67,4 +67,8 @@ public class ExceptionFactory {
     public static ApiException apiKeyNotFound() {
         return new ApiException(ErrorCode.API_KEY_NOT_FOUND);
     }
+
+    public static ApiException orderNotFound() {
+        return new ApiException(ErrorCode.ORDER_NOT_FOUND);
+    }
 }
