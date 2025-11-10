@@ -6,6 +6,9 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+
 public interface SystemParamRepository extends JpaRepository<SystemParamEntity, SystemParamType> {
 
     @Query("""
