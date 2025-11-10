@@ -2,5 +2,5 @@ package com.ecommerce.api.enums;
 
 
 public enum SystemParamType {
-    min_stock_visibility, prob_payment_reject, payment_retry_max
+    min_stock_visibility, prob_payment_reject, payment_retry_max, prob_token_reject
 }

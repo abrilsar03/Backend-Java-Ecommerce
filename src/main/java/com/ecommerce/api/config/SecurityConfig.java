@@ -26,29 +26,27 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ApiKeyRepository apiKeyRepo)
+            throws Exception {
+
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
+                // Agregar ambos filtros
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new ApiKeyAuth(apiKeyRepo),
+                        UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(auth -> auth.requestMatchers("/health-check/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll().anyRequest()
-                        .authenticated())
-
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                        .requestMatchers("/tokenization/**")
+                        .hasAuthority(AuthorityType.API_CLIENT.name()).anyRequest()
+                        .authenticated());
 
         return http.build();
     }
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http, ApiKeyRepository apiKeyRepo)
-            throws Exception {
-        http.addFilterBefore(new ApiKeyAuth(apiKeyRepo), UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/tokenization/**")
-                        .hasAuthority(AuthorityType.API_CLIENT.name()).requestMatchers("/health/**")
-                        .permitAll().anyRequest().authenticated());
-        return http.build();
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {

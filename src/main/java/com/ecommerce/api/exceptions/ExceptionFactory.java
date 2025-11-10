@@ -59,4 +59,8 @@ public class ExceptionFactory {
     public static ApiException insufficientStock() {
         return new ApiException(ErrorCode.INSUFFICIENT_STOCK);
     }
+
+    public static ApiException tokenizationRejected() {
+        return new ApiException(ErrorCode.TOKENIZATION_REJECTED);
+    }
 }
