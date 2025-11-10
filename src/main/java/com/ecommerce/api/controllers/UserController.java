@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
-@PreAuthorize("isAuthenticated()")
 public class UserController {
 
     private final UserService userService;
@@ -21,6 +20,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('CLIENT')")
     @GetMapping("/current-user/profile")
     public ProfileResponse getCurrentUserProfile(@AuthenticationPrincipal AuthUser auth) {
         return userService.findUser(auth.getId());
@@ -32,9 +32,8 @@ public class UserController {
         return userService.updateUser(auth.getId(), body);
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/{id}")
     public ProfileResponse getUser(@PathVariable("id") UUID userId) {
         return userService.findUser(userId);
     }

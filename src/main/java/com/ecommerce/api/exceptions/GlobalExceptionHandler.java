@@ -1,8 +1,10 @@
 package com.ecommerce.api.exceptions;
 
+import org.springframework.security.access.AccessDeniedException;
 import java.time.Instant;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import javax.naming.AuthenticationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -47,6 +49,21 @@ public class GlobalExceptionHandler {
         Map<String, Object> body = Map.of("status", 500, "error", "Internal Server Error",
                 "message", "Unexpected error", "timestamp", Instant.now().toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+        Map<String, Object> body = Map.of("status", 401, "error", "Unauthorized", "message",
+                "Authentication required", "timestamp", Instant.now().toString());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        Map<String, Object> body = Map.of("status", 403, "error", "Forbidden", "message",
+                "Access denied", "timestamp", Instant.now().toString());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
     }
 }
 

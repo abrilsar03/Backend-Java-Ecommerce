@@ -29,44 +29,52 @@ public class UserService {
 
     @Transactional
     public ProfileResponse updateUser(UUID userId, UpdateUserRequest req) {
-        UserEntity user =
-                userRepository.findById(userId).orElseThrow(() -> ExceptionFactory.userNotFound());
+        try {
+            UserEntity user = userRepository.findById(userId)
+                    .orElseThrow(() -> ExceptionFactory.userNotFound());
 
 
-        if (req.getFirstName() != null) {
-            user.setFirstName(req.getFirstName());
+            if (req.getFirstName() != null) {
+                user.setFirstName(req.getFirstName());
+            }
+
+            if (req.getLastName() != null) {
+                user.setLastName(req.getLastName());
+            }
+
+            if (req.getPhoneCode() != null) {
+                user.setPhoneCode(req.getPhoneCode());
+            }
+
+            if (req.getPhone() != null) {
+                user.setPhone(req.getPhone());
+            }
+
+            if (req.getAddress() != null) {
+                user.setAddress(req.getAddress());
+            }
+
+            if (req.getDocumentNumber() != null) {
+                user.setDocumentNumber(req.getDocumentNumber());
+            }
+
+            if (req.getDocumentType() != null) {
+                user.setDocumentType(req.getDocumentType());
+            }
+
+            var updatedUser = userRepository.save(user);
+            return parseResponse(updatedUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
 
-        if (req.getLastName() != null) {
-            user.setLastName(req.getLastName());
-        }
-
-        if (req.getPhoneCode() != null) {
-            user.setPhoneCode(req.getPhoneCode());
-        }
-
-        if (req.getPhone() != null) {
-            user.setPhone(req.getPhone());
-        }
-
-
-        if (req.getAddress() != null) {
-            user.setAddress(req.getAddress());
-        }
-
-        var updatedUser = userRepository.save(user);
-        return parseResponse(updatedUser);
     }
 
     private ProfileResponse parseResponse(UserEntity user) {
-        var dto = new ProfileResponse();
-        dto.setId(user.getId());
-        dto.setEmail(user.getEmail());
-        dto.setFirstName(user.getFirstName());
-        dto.setLastName(user.getLastName());
-        dto.setPhoneCode(user.getPhoneCode());
-        dto.setPhone(user.getPhone());
-        dto.setAddress(user.getAddress());
-        return dto;
+        var userResponse = new ProfileResponse(user.getId(), user.getEmail(), user.getFirstName(),
+                user.getLastName(), user.getPhoneCode(), user.getPhone(), user.getAddress(),
+                user.getDocumentType(), user.getDocumentNumber());
+        return userResponse;
     }
 }
