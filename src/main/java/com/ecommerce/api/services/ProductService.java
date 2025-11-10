@@ -1,6 +1,7 @@
 package com.ecommerce.api.services;
 
 import com.ecommerce.api.dto.products.CreateProductRequest;
+import com.ecommerce.api.dto.products.ProductQuery;
 import com.ecommerce.api.dto.products.ProductResponse;
 import com.ecommerce.api.dto.products.UpdateProductRequest;
 import com.ecommerce.api.dto.common.PaginatedResponse;
@@ -8,99 +9,142 @@ import com.ecommerce.api.entities.ProductEntity;
 import com.ecommerce.api.enums.SystemParamType;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.ProductRepository;
-import jakarta.transaction.Transactional;
+import com.ecommerce.api.utils.PaginationUtils;
+import com.ecommerce.api.utils.ProductSpecifications;
+import com.ecommerce.api.utils.SpecificationUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class ProductService {
 
-    private final ProductRepository repo;
-    private final SystemParamService systemParams;
+    private final ProductRepository productRepository;
+    private final SystemParamService systemParamsService;
 
-    public ProductService(ProductRepository repo, SystemParamService systemParams) {
-        this.repo = repo;
-        this.systemParams = systemParams;
+    public ProductService(ProductRepository productRepository,
+            SystemParamService systemParamsService) {
+        this.productRepository = productRepository;
+        this.systemParamsService = systemParamsService;
     }
 
-    public PaginatedResponse<ProductResponse> searchPublic(String q, int page, int size) {
-        int minStock = systemParams.getAsInt(SystemParamType.min_stock_visibility, 1);
-        PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProductEntity> res = repo.searchPublic(q, minStock, pr);
-        return PaginatedResponse.from(res, this::parseResponse);
+    @Transactional(readOnly = true)
+    public PaginatedResponse<ProductResponse> searchPublic(ProductQuery query) {
+        log.debug("Searching public products with filters: {}", query);
+
+        PaginationUtils.validatePaginationParams(query.getPage(), query.getSize());
+
+        Specification<ProductEntity> specification = buildPublicSpecification(query);
+
+        Pageable pageable = PaginationUtils.toPageable(query.getPage(), query.getSize());
+
+        Page<ProductEntity> page = productRepository.findAll(specification, pageable);
+
+        return PaginatedResponse.from(page, this::parseResponse);
+    }
+
+    @Transactional(readOnly = true)
+    public PaginatedResponse<ProductResponse> searchAdmin(ProductQuery query) {
+        log.debug("Searching admin products with filters: {}", query);
+
+        PaginationUtils.validatePaginationParams(query.getPage(), query.getSize());
+
+        // Para búsqueda admin: puede incluir activos e inactivos
+        Specification<ProductEntity> specification = buildAdminSpecification(query);
+
+        Pageable pageable = PaginationUtils.toPageable(query.getPage(), query.getSize());
+
+        Page<ProductEntity> page = productRepository.findAll(specification, pageable);
+
+        return PaginatedResponse.from(page, this::parseResponse);
+    }
+
+    private Specification<ProductEntity> buildPublicSpecification(ProductQuery query) {
+        return Specification.where(ProductSpecifications.isActive()).and(buildCommonFilters(query));
+    }
+
+    private Specification<ProductEntity> buildAdminSpecification(ProductQuery query) {
+        return buildCommonFilters(query);
+    }
+
+    private Specification<ProductEntity> buildCommonFilters(ProductQuery query) {
+        Specification<ProductEntity> specification = Specification.where(null);
+
+        specification = specification
+                .and(SpecificationUtils.optional(query.getName(),
+                        ProductSpecifications::nameContains))
+                .and(SpecificationUtils.optional(query.getSku(),
+                        ProductSpecifications::skuContains))
+                .and(SpecificationUtils.optional(query.getHasStock(),
+                        ProductSpecifications::hasStock))
+                .and(SpecificationUtils.optional(query.getMinPrice(),
+                        ProductSpecifications::priceAtLeast))
+                .and(SpecificationUtils.optional(query.getMaxPrice(),
+                        ProductSpecifications::priceAtMost));
+
+        return specification;
     }
 
     public ProductResponse findOnePublic(UUID id) {
-        int minStock = systemParams.getAsInt(SystemParamType.min_stock_visibility, 1);
-        var p = repo.findById(id).orElseThrow(() -> ExceptionFactory.productNotFound());
-        if (Boolean.FALSE.equals(p.getActive())
-                || (p.getStock() != null && p.getStock() < minStock)) {
-            throw ExceptionFactory.productNotFound();
-        }
-        return parseResponse(p);
-    }
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> ExceptionFactory.productNotFound());
 
-    public PaginatedResponse<ProductResponse> searchAdmin(String q, int page, int size) {
-        PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<ProductEntity> res = repo.searchAdmin(q, pr);
-        return PaginatedResponse.from(res, this::parseResponse);
-    }
+        validateProductVisibility(product);
 
-    public ProductResponse findOneAdmin(UUID id) {
-        var product = repo.findById(id).orElseThrow(() -> ExceptionFactory.productNotFound());
         return parseResponse(product);
     }
 
+    public ProductResponse findOneAdmin(UUID id) {
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> ExceptionFactory.productNotFound());
+        return parseResponse(product);
+    }
+
+
     @Transactional
     public ProductResponse create(CreateProductRequest request) {
-        repo.findBySku(request.getSku()).ifPresent(x -> {
+        productRepository.findBySku(request.getSku()).ifPresent(x -> {
             throw ExceptionFactory.skuAlreadyExists();
         });
 
         var product = buildProductBody(request);
+        var saved = productRepository.save(product);
 
-        var updated = repo.save(product);
-
-        return parseResponse(repo.save(updated));
+        return parseResponse(saved);
     }
 
     @Transactional
     public ProductResponse update(UUID id, UpdateProductRequest request) {
-        var product = repo.findById(id).orElseThrow(() -> ExceptionFactory.productNotFound());
+        var product = productRepository.findById(id)
+                .orElseThrow(() -> ExceptionFactory.productNotFound());
 
         if (request.getTitle() != null) {
             product.setTitle(request.getTitle());
         }
-
         if (request.getDescription() != null) {
             product.setDescription(request.getDescription());
         }
-
-
         if (request.getPriceCents() != null) {
             product.setPriceCents(request.getPriceCents());
         }
-
         if (request.getPhotoUrl() != null) {
             product.setPhotoUrl(request.getPhotoUrl());
         }
-
         if (request.getTax() != null) {
             product.setTax(request.getTax());
         }
-
         if (request.getActive() != null) {
             product.setActive(request.getActive());
         }
-
         if (request.getStock() != null) {
             product.setStock(request.getStock());
         }
 
-        var updated = repo.save(product);
-
+        var updated = productRepository.save(product);
         return parseResponse(updated);
     }
 
@@ -130,4 +174,14 @@ public class ProductService {
         product.setStock(request.getStock());
         return product;
     }
+
+    private void validateProductVisibility(ProductEntity product) {
+        int minStock = systemParamsService.getAsInt(SystemParamType.min_stock_visibility, 15);
+
+        if (Boolean.FALSE.equals(product.getActive())
+                || (product.getStock() != null && product.getStock() < minStock)) {
+            throw ExceptionFactory.productNotFound();
+        }
+    }
+
 }

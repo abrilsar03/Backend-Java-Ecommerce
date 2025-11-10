@@ -3,11 +3,11 @@ package com.ecommerce.api.services;
 import com.ecommerce.api.dto.cart.*;
 import com.ecommerce.api.entities.*;
 import com.ecommerce.api.enums.CartStatusType;
+import com.ecommerce.api.enums.SystemParamType;
 import com.ecommerce.api.exceptions.ExceptionFactory;
 import com.ecommerce.api.repositories.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,12 +17,14 @@ public class CartService {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final UserRepository userRepository;
+    private final SystemParamService systemParamsService;
 
     public CartService(CartRepository cartRepository, ProductRepository productRepository,
-            UserRepository userRepository) {
+            UserRepository userRepository, SystemParamService systemParamsService) {
         this.cartRepository = cartRepository;
         this.productRepository = productRepository;
         this.userRepository = userRepository;
+        this.systemParamsService = systemParamsService;
     }
 
     public CartResponse findActive(UUID userId) {
@@ -174,9 +176,9 @@ public class CartService {
     }
 
     private void assertStockForTargetQuantity(ProductEntity product, int targetQty) {
-        Integer stock = product.getStock();
-
-        if (stock != null && targetQty > stock) {
+        int minStock = systemParamsService.getAsInt(SystemParamType.min_stock_visibility, 15);
+        System.out.println("min stock que" + minStock);
+        if (targetQty > minStock) {
             throw ExceptionFactory.insufficientStock();
         }
     }

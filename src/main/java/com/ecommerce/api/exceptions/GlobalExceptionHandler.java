@@ -46,7 +46,9 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleOthers(Exception ex) {
-        Map<String, Object> body = Map.of("status", 500, "error", "Internal Server Error",
+        ex.printStackTrace();
+        System.out.println("YAAAAAAA " + ex.getMessage());
+        Map<String, Object> body = Map.of("status", 501, "error", "Internal Server Error",
                 "message", "Unexpected error", "timestamp", Instant.now().toString());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }

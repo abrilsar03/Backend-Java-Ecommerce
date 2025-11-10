@@ -5,11 +5,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.NoArgsConstructor;
 
 
 @Entity
-@NoArgsConstructor
 @Table(name = "products")
 public class ProductEntity extends BasicEntity {
 
@@ -108,13 +106,6 @@ public class ProductEntity extends BasicEntity {
         this.tax = tax;
     }
 
-    public Boolean isActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
 
     public Integer getStock() {
         return stock;

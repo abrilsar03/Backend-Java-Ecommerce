@@ -16,7 +16,6 @@ public class ProductResponse {
     private Boolean active;
     private Integer stock;
 
-    public ProductResponse() {}
 
     public ProductResponse(UUID id, String title, String sku, String description,
             Integer priceCents, String photoUrl, BigDecimal tax, Boolean active, Integer stock) {

@@ -2,12 +2,9 @@ package com.ecommerce.api.dto.cart;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.UUID;
-import org.checkerframework.checker.units.qual.A;
 
-@NoArgsConstructor
 public class AddItemsRequest {
 
     @NotEmpty(message = "Items list cannot be empty")
@@ -15,10 +12,6 @@ public class AddItemsRequest {
     @Valid
     private List<Item> items;
 
-
-    public AddItemsRequest(List<Item> items) {
-        this.items = items;
-    }
 
     public List<Item> getItems() {
         return items;

@@ -25,10 +25,9 @@ public class CartController {
         return carts.findActive(auth.getId());
     }
 
-    @PostMapping("/add-items")
+    @PatchMapping("/add-items")
     public CartResponse addItems(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody AddItemsRequest body) {
-        System.out.println("HOLAAS");
         return carts.addItems(auth.getId(), body);
     }
 
@@ -38,7 +37,7 @@ public class CartController {
         return carts.setQuantities(auth.getId(), body);
     }
 
-    @DeleteMapping("/remove-items")
+    @PatchMapping("/remove-items")
     public CartResponse removeItems(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody RemoveItemsRequest body) {
         return carts.removeItems(auth.getId(), body);
