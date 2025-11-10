@@ -1,9 +1,8 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
-import java.time.OffsetDateTime;
 import java.util.UUID;
-import javax.swing.event.DocumentEvent.EventType;
+import com.ecommerce.api.enums.EventType;
 import com.ecommerce.api.enums.EntityType;
 import com.ecommerce.api.enums.LogLevelType;
 

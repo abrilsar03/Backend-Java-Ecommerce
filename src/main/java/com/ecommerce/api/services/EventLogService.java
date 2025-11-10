@@ -3,6 +3,7 @@ package com.ecommerce.api.services;
 import com.ecommerce.api.entities.EventLogEntity;
 import com.ecommerce.api.enums.EntityType;
 import com.ecommerce.api.enums.LogLevelType;
+import com.ecommerce.api.enums.EventType;
 import com.ecommerce.api.repositories.EventLogRepository;
 import com.ecommerce.api.utils.RequestContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import javax.swing.event.DocumentEvent.EventType;
+
 
 @Service
 public class EventLogService {
