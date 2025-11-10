@@ -2,12 +2,14 @@ package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 import com.ecommerce.api.enums.RoleCodeType;
 
 @Entity
 @Table(name = "roles")
+@NoArgsConstructor
 public class RoleEntity extends BasicEntity {
 
     @Column(nullable = false, unique = true)

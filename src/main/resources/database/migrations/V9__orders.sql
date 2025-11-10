@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS orders (
   status TEXT NOT NULL,
   shipping_address TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  updated_at TIMESTAMPTZ
+  active BOOLEAN NOT NULL DEFAULT TRUE
+
 );
 CREATE INDEX IF NOT EXISTS idx_orders_user_id ON orders(user_id);
 

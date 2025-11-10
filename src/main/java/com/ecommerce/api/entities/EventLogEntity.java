@@ -1,12 +1,14 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import java.util.UUID;
 import com.ecommerce.api.enums.EventType;
 import com.ecommerce.api.enums.EntityType;
 import com.ecommerce.api.enums.LogLevelType;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "event_logs",
         indexes = {@Index(name = "idx_event_logs_request_id", columnList = "request_id"),
                 @Index(name = "idx_event_logs_event_created",

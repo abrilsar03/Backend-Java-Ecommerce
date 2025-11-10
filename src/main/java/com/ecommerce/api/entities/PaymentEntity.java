@@ -3,8 +3,10 @@ package com.ecommerce.api.entities;
 import com.ecommerce.api.enums.PaymentStatusType;
 import com.ecommerce.api.enums.PaymentType;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "payments")
 public class PaymentEntity extends BasicEntity {
     @OneToOne(fetch = FetchType.LAZY)

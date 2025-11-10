@@ -2,10 +2,11 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
-
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "order_items",
         uniqueConstraints = @UniqueConstraint(name = "uq_order_item_order_product",
                 columnNames = {"order_id", "product_id"}),

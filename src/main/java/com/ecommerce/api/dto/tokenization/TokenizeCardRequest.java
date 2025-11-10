@@ -1,7 +1,9 @@
 package com.ecommerce.api.dto.tokenization;
 
 import jakarta.validation.constraints.*;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class TokenizeCardRequest {
     @NotBlank
     private String pan;

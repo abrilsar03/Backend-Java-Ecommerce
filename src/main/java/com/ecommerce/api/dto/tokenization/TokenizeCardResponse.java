@@ -1,5 +1,8 @@
 package com.ecommerce.api.dto.tokenization;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class TokenizeCardResponse {
     private String token;
     private String brand;

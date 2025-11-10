@@ -10,6 +10,16 @@ public class CartResponse {
     private CartStatusType status;
     private List<CartItemResponse> items;
 
+    public CartResponse() {}
+
+    public CartResponse(UUID cartId, UUID userId, CartStatusType status,
+            List<CartItemResponse> items) {
+        this.cartId = cartId;
+        this.userId = userId;
+        this.status = status;
+        this.items = items;
+    }
+
     public UUID getCartId() {
         return cartId;
     }

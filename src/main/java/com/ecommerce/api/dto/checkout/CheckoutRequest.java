@@ -1,6 +1,9 @@
 package com.ecommerce.api.dto.checkout;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 
 public class CheckoutRequest {
     @NotBlank

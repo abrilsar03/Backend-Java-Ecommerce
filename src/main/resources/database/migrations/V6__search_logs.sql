@@ -5,7 +5,9 @@ CREATE TABLE IF NOT EXISTS search_logs (
   query TEXT,
   ip TEXT,
   user_agent TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE INDEX IF NOT EXISTS idx_search_logs_user    ON search_logs(user_id);

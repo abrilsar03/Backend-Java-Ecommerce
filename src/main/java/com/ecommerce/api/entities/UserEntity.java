@@ -3,6 +3,7 @@ package com.ecommerce.api.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
+import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;

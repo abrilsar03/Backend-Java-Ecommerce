@@ -1,7 +1,9 @@
 package com.ecommerce.api.dto.cart;
 
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class CartItemResponse {
     private UUID productId;
     private String title;

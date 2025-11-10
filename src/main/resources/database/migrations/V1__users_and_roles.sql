@@ -2,8 +2,11 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE roles (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  role TEXT NOT NULL UNIQUE, CHECK (role IN ('ADMIN', 'CLIENT')),
-  name TEXT NOT NULL
+  role TEXT NOT NULL UNIQUE CHECK (role IN ('ADMIN', 'CLIENT')),
+  name TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE users (
@@ -14,20 +17,18 @@ CREATE TABLE users (
   password   TEXT NOT NULL,
   phone_code TEXT,
   phone      TEXT,
-  documentNumber        TEXT,
-  documentType   TEXT CHECK (documentType IN ('V','E','J','DNI','CUIT','SSN')),
-  address        TEXT NOT NULL,
-  active     BOOLEAN NOT NULL DEFAULT TRUE,
+  document_number TEXT,
+  document_type TEXT CHECK (document_type IN ('V','E','J','DNI','CUIT','SSN')),
+  address TEXT NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT TRUE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ
 );
-
 
 CREATE TABLE user_roles (
   user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   role_id UUID NOT NULL REFERENCES roles(id),
   PRIMARY KEY (user_id, role_id)
 );
-
 
 CREATE INDEX idx_users_created_at ON users(created_at DESC);

@@ -2,11 +2,12 @@ package com.ecommerce.api.entities;
 
 import com.ecommerce.api.enums.CartStatusType;
 import jakarta.persistence.*;
-
+import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "carts", indexes = {@Index(name = "idx_carts_user_id", columnList = "user_id")})
 public class CartEntity extends BasicEntity {
 

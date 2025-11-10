@@ -1,9 +1,11 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "api_keys", indexes = @Index(name = "idx_api_keys_active", columnList = "active"))
 public class ApiKeyEntity extends BasicEntity {
 

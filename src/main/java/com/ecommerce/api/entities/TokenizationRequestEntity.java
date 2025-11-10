@@ -3,9 +3,11 @@ package com.ecommerce.api.entities;
 import com.ecommerce.api.enums.TokenizationStatusType;
 import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 
 @Entity
+@NoArgsConstructor
 @Table(name = "tokenization_requests",
         indexes = {@Index(name = "idxtokreq_fingerprint", columnList = "fingerprint"),
                 @Index(name = "idxtokreq_status_created", columnList = "status, created_at")})

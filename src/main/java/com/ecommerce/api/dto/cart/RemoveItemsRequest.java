@@ -3,6 +3,9 @@ package com.ecommerce.api.dto.cart;
 import java.util.List;
 import java.util.UUID;
 import jakarta.validation.constraints.NotEmpty;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 
 public class RemoveItemsRequest {
     @NotEmpty

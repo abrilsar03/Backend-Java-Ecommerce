@@ -13,6 +13,13 @@ public class UpdateItemRequest {
     private Integer quantity;
 
 
+    public UpdateItemRequest() {}
+
+    public UpdateItemRequest(UUID productId, Integer quantity) {
+        this.productId = productId;
+        this.quantity = quantity;
+    }
+
     public UUID getProductId() {
         return productId;
     }

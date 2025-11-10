@@ -1,5 +1,8 @@
 package com.ecommerce.api.dto.auth;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class AuthResponse {
     private String accessToken;
     private long expiresIn;

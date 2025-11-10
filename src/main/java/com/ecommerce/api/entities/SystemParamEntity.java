@@ -2,9 +2,11 @@ package com.ecommerce.api.entities;
 
 import com.ecommerce.api.enums.SystemParamType;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "system_params")
 public class SystemParamEntity {
 

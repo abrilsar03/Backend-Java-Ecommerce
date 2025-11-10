@@ -28,6 +28,7 @@ public class CartController {
     @PostMapping("/add-items")
     public CartResponse addItems(@AuthenticationPrincipal AuthUser auth,
             @Valid @RequestBody AddItemsRequest body) {
+        System.out.println("HOLAAS");
         return carts.addItems(auth.getId(), body);
     }
 

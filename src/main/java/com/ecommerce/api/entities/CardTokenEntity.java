@@ -1,6 +1,7 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "card_tokens",
@@ -9,6 +10,7 @@ import jakarta.persistence.*;
                         unique = true),
                 @Index(name = "idx_card_tokens_token", columnList = "token", unique = true)})
 
+@NoArgsConstructor
 public class CardTokenEntity extends BasicEntity {
 
     @Column(nullable = false, unique = true)

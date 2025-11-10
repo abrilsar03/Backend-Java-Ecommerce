@@ -42,7 +42,6 @@ public class ProductService {
         return parseResponse(p);
     }
 
-    // --------- Admin (sin filtros) ----------
     public PaginatedResponse<ProductResponse> searchAdmin(String q, int page, int size) {
         PageRequest pr = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         Page<ProductEntity> res = repo.searchAdmin(q, pr);

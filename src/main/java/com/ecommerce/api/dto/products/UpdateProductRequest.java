@@ -1,8 +1,10 @@
 package com.ecommerce.api.dto.products;
 
 import jakarta.validation.constraints.*;
+import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
+@NoArgsConstructor
 public class UpdateProductRequest {
 
     @Size(max = 255)

@@ -2,7 +2,9 @@ package com.ecommerce.api.dto.products;
 
 import java.math.BigDecimal;
 import java.util.UUID;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class ProductResponse {
     private UUID id;
     private String title;

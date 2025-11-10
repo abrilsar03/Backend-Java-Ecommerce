@@ -2,8 +2,10 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "cart_items",
         uniqueConstraints = @UniqueConstraint(name = "uq_cart_item_cart_product",
                 columnNames = {"cart_id", "product_id"}),

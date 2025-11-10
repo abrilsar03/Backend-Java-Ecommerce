@@ -1,7 +1,9 @@
 package com.ecommerce.api.dto.systemParams;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 public class UpdateSystemParamRequest {
     @NotBlank
     private String value;

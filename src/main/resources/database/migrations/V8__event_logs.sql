@@ -8,7 +8,9 @@ CREATE TABLE IF NOT EXISTS event_logs (
   entity_id   UUID,
   level       TEXT NOT NULL, CHECK (level IN ('DEBUG', 'INFO', 'WARN', 'ERROR')),
   payload     JSONB,        
-  created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+  created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE INDEX IF NOT EXISTS idx_event_logs_request_id ON event_logs(request_id);

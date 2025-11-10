@@ -1,8 +1,10 @@
 package com.ecommerce.api.dto.systemParams;
 
 import com.ecommerce.api.enums.SystemParamType;
+import lombok.NoArgsConstructor;
 import java.time.OffsetDateTime;
 
+@NoArgsConstructor
 public class SystemParamResponse {
     private SystemParamType key;
     private String value;

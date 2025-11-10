@@ -1,9 +1,11 @@
 package com.ecommerce.api.entities;
 
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "search_logs",
         indexes = {@Index(name = "idx_search_logs_user", columnList = "user_id"),
                 @Index(name = "idx_search_logs_created_at", columnList = "created_at")})

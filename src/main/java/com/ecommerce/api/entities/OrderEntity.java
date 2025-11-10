@@ -3,11 +3,12 @@ package com.ecommerce.api.entities;
 
 import com.ecommerce.api.enums.OrderStatusType;
 import jakarta.persistence.*;
-
+import lombok.NoArgsConstructor;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NoArgsConstructor
 @Table(name = "orders", indexes = {@Index(name = "idx_orders_user_id", columnList = "user_id")})
 public class OrderEntity extends BasicEntity {
 

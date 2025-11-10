@@ -1,8 +1,11 @@
 package com.ecommerce.api.dto.common;
 
 import org.springframework.data.domain.Page;
+import lombok.NoArgsConstructor;
 import java.util.List;
 import java.util.function.Function;
+
+@NoArgsConstructor
 
 public class PaginatedResponse<T> {
     private List<T> items;

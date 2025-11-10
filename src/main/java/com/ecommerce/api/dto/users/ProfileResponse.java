@@ -15,9 +15,7 @@ public class ProfileResponse {
     private String documentNumber;
     private DocumentType documentType;
 
-    public ProfileResponse() {
-        super();
-    }
+    public ProfileResponse() {}
 
     public ProfileResponse(UUID id, String email, String firstName, String lastName,
             String phoneCode, String phone, String address, DocumentType documentType,
