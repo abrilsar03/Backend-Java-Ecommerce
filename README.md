@@ -8,7 +8,8 @@ https://www.postman.com/abrilsar03/workspace/my-workspace/collection/39717677-4f
 ## Hosted
 - On render Api y Postgres
 
-## Heath Check: https://backend-java-ecommerce.onrender.com/api/v1/healt-check/ping
+## Heath Check: 
+https://backend-java-ecommerce.onrender.com/api/v1/healt-check/ping
 
 ## 📋 Tabla de Contenidos
 
