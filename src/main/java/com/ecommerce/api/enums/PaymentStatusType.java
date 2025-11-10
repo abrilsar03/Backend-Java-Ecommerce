@@ -2,5 +2,5 @@ package com.ecommerce.api.enums;
 
 public enum PaymentStatusType {
 
-    PENDING, APPROVED, REJECTED
+    PENDING, SUCCESS, FAILED
 }
