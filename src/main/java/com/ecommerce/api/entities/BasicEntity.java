@@ -23,7 +23,6 @@ public abstract class BasicEntity {
     private Boolean active = true;
 
     public BasicEntity() {
-        this.id = UUID.randomUUID();
         this.createdAt = OffsetDateTime.now();
         this.updatedAt = OffsetDateTime.now();
     }

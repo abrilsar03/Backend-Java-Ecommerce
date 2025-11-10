@@ -15,7 +15,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.Locale;
 import java.util.Set;
 
@@ -40,66 +39,69 @@ public class AuthService {
     public AuthResponse register(RegisterUserRequest request, RoleCodeType roleType) {
         final String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
 
-        if (userRepository.existsByEmailIgnoreCase(email)) {
-            throw ExceptionFactory.emailAlreadyExist("Email already exists");
+        try {
+            if (userRepository.existsByEmailIgnoreCase(email)) {
+                throw ExceptionFactory.emailAlreadyExist("Email already exists");
+            }
+
+            var user = this.buildUserEntity(request);
+
+            var role = roleRepository.findByRole(roleType);
+
+            if (role == null) {
+                throw ExceptionFactory.roleNotFound("Role not found");
+            }
+
+            var roles = Set.of(role);
+
+            user.setRoles(roles);
+
+            userRepository.save(user);
+
+            var authUser = AuthUser.fromUser(user);
+
+            String token = jwtUtil.generateToken(authUser);
+
+            return new AuthResponse(token, jwtUtil.calculateExpiration());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-
-        var user = this.buildUserEntity(request);
-
-        var role = roleRepository.findByRole(roleType.toString());
-
-        if (role == null) {
-            throw ExceptionFactory.roleNotFound("Role not found");
-        }
-
-        user.setRoles(Set.of(role));
-
-        userRepository.save(user);
-
-        var authUser = AuthUser.fromUser(user);
-
-        String token = jwtUtil.generateToken(authUser);
-
-        return new AuthResponse(token, jwtUtil.calculateExpiration());
     }
 
 
     @Transactional
     public AuthResponse login(LoginUserRequest request) {
         final String email = request.getEmail().trim().toLowerCase(Locale.ROOT);
+        try {
+            var user =
+                    userRepository.findByEmailIgnoreCase(email).orElseThrow(() -> ExceptionFactory
+                            .invalidCredentials("The provided credentials are invalid"));
 
-        var user = userRepository.findByEmailIgnoreCase(email);
+            if (Boolean.FALSE.equals(user.getActive())) {
+                throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
+            }
 
-        if (user == null) {
-            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
+            }
+
+            var authUser = AuthUser.fromUser(user);
+
+            String token = jwtUtil.generateToken(authUser);
+
+            return new AuthResponse(token, jwtUtil.calculateExpiration());
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
         }
-
-        if (!user.getActive()) {
-            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
-        }
-
-        if (user.checkPassword(request.getPassword(), passwordEncoder)) {
-            throw ExceptionFactory.invalidCredentials("The provided credentials are invalid");
-        }
-
-        userRepository.save(user);
-
-        var authUser = AuthUser.fromUser(user);
-
-        String token = jwtUtil.generateToken(authUser);
-
-        return new AuthResponse(token, jwtUtil.calculateExpiration());
     }
 
 
     public UserEntity buildUserEntity(RegisterUserRequest request) {
-        var user = new UserEntity();
-        user.setEmail(request.getEmail().trim().toLowerCase(Locale.ROOT));
-        user.setPassword(request.getPassword(), passwordEncoder);
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setActive(true);
-        user.setCreatedAt(OffsetDateTime.now());
-        return user;
+        return new UserEntity(request.getFirstName(), request.getLastName(), request.getEmail(),
+                request.getPassword(), passwordEncoder, request.getPhoneCode(), request.getPhone(),
+                request.getAddress(), request.getDocumentNumber(), request.getDocumentType());
     }
 }

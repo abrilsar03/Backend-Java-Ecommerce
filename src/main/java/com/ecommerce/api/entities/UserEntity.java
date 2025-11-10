@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import com.ecommerce.api.enums.DocumentType;
@@ -41,6 +42,25 @@ public class UserEntity extends BasicEntity {
     @Column(name = "document_type", length = 10)
     @Enumerated(EnumType.STRING)
     private DocumentType documentType;
+
+    public UserEntity() {
+        super();
+    }
+
+    public UserEntity(String firstName, String lastName, String email, String password,
+            PasswordEncoder passwordEncoder, String phoneCode, String phone, String address,
+            String documentNumber, DocumentType documentType) {
+        super();
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email != null ? email.trim().toLowerCase(Locale.ROOT) : null;
+        this.phoneCode = phoneCode;
+        this.phone = phone;
+        this.address = address;
+        this.documentNumber = documentNumber;
+        this.documentType = documentType;
+        setPassword(password, passwordEncoder);
+    }
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"),

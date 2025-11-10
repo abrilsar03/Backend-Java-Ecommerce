@@ -8,7 +8,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
-import java.util.UUID;
 
 public class AuthUser extends JwtPayload implements UserDetails {
 
@@ -21,17 +20,30 @@ public class AuthUser extends JwtPayload implements UserDetails {
     private Set<RoleEntity> roles = new HashSet<>();
     private Set<PermissionEntity> directPermissions = new HashSet<>();
 
-    public AuthUser() {}
+    public AuthUser() {
+
+    }
+
+    public AuthUser(UUID id, String email, String firstName, String lastName, Set<RoleEntity> roles,
+            Set<PermissionEntity> directPermissions) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
+        this.directPermissions = directPermissions;
+    }
 
     public static AuthUser fromUser(UserEntity user) {
-        AuthUser authUser = new AuthUser();
-        authUser.id = user.getId();
-        authUser.email = user.getEmail();
-        authUser.firstName = user.getFirstName();
-        authUser.lastName = user.getLastName();
-        authUser.roles = Optional.ofNullable(user.getRoles()).orElseGet(Set::of);
-        authUser.directPermissions =
+
+        Set<RoleEntity> roles = Optional.ofNullable(user.getRoles()).orElseGet(Set::of);
+
+        Set<PermissionEntity> directPermission =
                 Optional.ofNullable(user.getDirectPermissions()).orElseGet(Set::of);
+
+        AuthUser authUser = new AuthUser(user.getId(), user.getEmail(), user.getFirstName(),
+                user.getLastName(), roles, directPermission);
+
         return authUser;
     }
 

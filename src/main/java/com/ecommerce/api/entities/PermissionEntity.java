@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 @Table(name = "permissions", uniqueConstraints = @UniqueConstraint(name = "unique_permission",
         columnNames = {"resource", "action"}))
 
-public class PermissionEntity extends BasicEntity {
+public class PermissionEntity extends BasicIdEntity {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PermissionResourceType resource;

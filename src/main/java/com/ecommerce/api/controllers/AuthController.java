@@ -1,6 +1,5 @@
 package com.ecommerce.api.controllers;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,16 +28,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public AuthResponse register(@Valid @RequestBody RegisterUserRequest request) {
-
         return authService.register(request, RoleCodeType.ADMIN);
-
     }
 
 
 
     @PostMapping("/login")
     public AuthResponse login(@Valid @RequestBody LoginUserRequest request) {
-        return ResponseEntity.ok(authService.login(request)).getBody();
+        return authService.login(request);
     }
 
 }
