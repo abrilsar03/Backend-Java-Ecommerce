@@ -2,6 +2,10 @@
 
 API RESTful para un sistema de e-commerce desarrollada con Spring Boot, que incluye gestión de productos, carritos de compra, órdenes, pagos, autenticación y autorización basada en roles y permisos.
 
+## Data Base Model
+Basic model: https://dbdiagram.io/d/Basic-Ecommerce-690ff4e46735e11170e359fd
+Note: For the future - Extended model: https://dbdiagram.io/d/Ecommerce-Extended-690e289a6735e11170c6a04e
+
 ## Postman collection: 
 https://www.postman.com/abrilsar03/workspace/my-workspace/collection/39717677-4fd1b35d-f4ca-41a3-a99d-5ff50e602a62?action=share&creator=39717677&active-environment=39717677-45fb816e-ea12-4a47-8088-a28b37d21228
 
